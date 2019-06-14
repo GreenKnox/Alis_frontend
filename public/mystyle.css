@@ -7,6 +7,22 @@ header{
 ;
     font-size: 35px
 ;
-    color: black
+    font-color: black
 ;
+    font-family: Lucida Console
+;
+    color: #636e72
+;
+}
+.navbar {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: .20rem 1rem;
 }

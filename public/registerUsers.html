@@ -13,10 +13,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
-
+<nav class="navbar navbar-dark bg-dark">
 <div class="col-lg-12 text-center ">
-    <h1 style="font-family:Lucida Console;color: #636e72;">Adwenan Land Commission System</h1>
+    <header>
+    <header>
+        <br><h1 style="font-family:Lucida Console;color: #636e72;">Adwenan Land Commission System</h1><br/>
+    </header>
 </div>
+</nav>
 
 
 <body class="login" style="margin-top: -20px;" style="background-color: #636b6f">
@@ -28,9 +32,9 @@
 
 
     <br>
-    <div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <div class="shadow-lg p-3 mb-5 bg-black rounded">
         <header>
-            <h4 style="font-family:Lucida Console;color: #636e72;">User Registration Form</h4>
+            <h4>Registration Form</h4>
         </header>
         <section>
             <br/>
@@ -52,45 +56,61 @@
                 <div class="tab-content" id="myTabContent" style="margin-top: 10px">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                         <div>
+                            <label>Firstname</label>
                             <input type="text" class="form-control" placeholder="First Name" name="firstname" required=""/>
                         </div>
                         <br>
                         <div>
+                            <label>Lastname</label>
                             <input type="text" class="form-control" placeholder="Last Name" name="lastname" required=""/>
                         </div>
                         <br/>
 
                         <div>
+                            <label>Username</label>
                             <input type="text" class="form-control" placeholder="Username" name="username" required=""/>
+                            <div>
+
+                                <br><a  href="#profile" class="btn btn-outline-success pull-right"  data-toggle="tab">Next</a><br/>
+                            </div>
                         </div>
                         <br/>
                     </div>
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                         <div>
+                            <label>Password</label>
                             <input type="password" class="form-control" placeholder="Password " name="password" required="">
                         </div>
                         <br/>
 
                         <div>
+                            <label>Confirm Password</label>
                             <input type="password" class="form-control" placeholder="Confirm Password " name="confirmpassword" required="">
                         </div>
                         <br>
                         <div>
+                            <label>Email</label>
                             <input type="text" class="form-control" placeholder="Email" name="email" required=""/>
                         </div>
                         <br/>
 
 
                         <div>
+                            <label>Staff Number</label>
                             <input type="text" class="form-control" placeholder="Staff number" name="staffnumber" required="">
                         </div>
                         <br/>
                         <div>
+                            <label>Title</label>
                             <input type="text" class="form-control" placeholder="Title" name="Title" required="">
                         </div>
                         <br>
                         <div>
+                            <label>Designation</label>
                             <input type="text" class="form-control" placeholder="Designation" name="Designation" required="">
+                            <div>
+                                <br><a href="#contact" class="btn btn-outline-success pull-right"  data-toggle="tab">Next</a><br/>
+                            </div>
                         </div>
                         <br/>
 
@@ -100,49 +120,61 @@
                     </div>
                     <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                         <div>
+                            <label>Company ID</label>
                             <input type="text" class="form-control" placeholder="Company ID" name="CompanyID" required="">
                         </div>
                         <br>
                         <div>
+                            <label>Division</label>
                             <input type="text" class="form-control" placeholder="Division" name="Division" required="">
                         </div>
                         <br/>
                         <div>
+                            <label>Address</label>
                             <input type="text" class="form-control" placeholder="Address" name="Address" required="">
                         </div>
                         <br>
                         <div>
+                            <label>Phone</label>
                             <input type="text" class="form-control" placeholder="Phone" name="Phone" required="">
                         </div>
                         <br/>
                         <div>
+                            <label>Fax</label>
                             <input type="text" class="form-control" placeholder="Fax" name="Fax" required="">
                         </div>
                         <br>
                         <div>
+                            <label>Mobile</label>
                             <input type="text" class="form-control" placeholder="Mobile" name="Mobile" required="">
                         </div>
                         <br/>
                         <div>
+                            <label>Website Address</label>
                             <input type="text" class="form-control" placeholder="Website Address" name="Website Address" required="">
                         </div>
                         <br>
                         <div>
+                            <label>
+                                <label>Department</label>
                             <input type="text" class="form-control" placeholder="Department" name="Department" required="">
                         </div>
                         <br/>
                         <div>
+                            <label>Location</label>
                             <input type="text" class="form-control" placeholder="Location" name="Location" required="">
                         </div>
                         <br>
                         <div>
+                            <label>District</label>
                             <input type="text" class="form-control" placeholder="District" name="district" required="">
                         </div>
                         <br/>
+                        <label>Region</label>
                         <input type="text" class="form-control" placeholder="Region" name="Region" required="">
-
-
-                        <br><button class="btn btn-outline-success" type="submit"  >Register</button><br/>
+                        <div>
+                            <br><button class="btn btn-outline-success" type="submit"  >Register</button><br/>
+                        </div>
                     </div>
                 </div>
 
