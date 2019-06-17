@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Redirect, Link } from 'react-router-dom'
-
+import SingleInput from './SingleInput'
+import { Redirect } from 'react-router-dom'
 
 const styles = {
     style1: {
@@ -14,10 +14,10 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/login';
+const API_URL = 'http://127.0.0.1:8000/api/passwordreset';
 
 
-export default class Login extends Component {
+export default class EnterEmail extends Component {
 
     constructor(props) {
         super(props)
@@ -26,7 +26,6 @@ export default class Login extends Component {
             message: '',
             token: '',
             email: '',
-            password: '',
             redirect: ''
         }
 
@@ -39,22 +38,19 @@ export default class Login extends Component {
 
         this.setState({
             [name]: value
-        })
+        });
     }
 
-    
-    handleClearForm = () => {  
+    handleReset = () => {
         this.setState({
-            email: '',
-            password: ''
-        })
-      }
+            email: ''
+        });
+    };
 
     setRedirect = () => {
-        // this.setState({
-        //     redirect: true
-        // })
-        return true
+        this.setState({
+            redirect: true
+        })
     }
     renderRedirect = () => {
         if (this.state.redirect) {
@@ -62,12 +58,11 @@ export default class Login extends Component {
         }
     }
 
-    validateUser = (event) => {
+    sendRequest = (event) => {
         event.preventDefault()
-        if (this.state.email.trim() && this.state.password.trim()) {
+        if (this.state.email.trim()) {
             axios.post(API_URL, {
-                email: this.state.email,
-                password: this.state.password,
+                email: this.state.email
             })
                 .then(function (response) {
                     console.log(response);
@@ -75,17 +70,17 @@ export default class Login extends Component {
                         case 400: {
                             console.log(`Looks like there was a problem. Status Code: ${response.status}`);
                             console.log(`Error: ${response.message}`);
-                            this.handleClearForm(event)
                             break;
                         }
                         case 200: {
-                            console.log("It worked");
-                            this.props.addMessage(response.data.message);
-                            this.props.addToken(response.data.token);
-                            // this.handleReset()
-                            this.redirect = this.handleReset
-                            // this.setRedirect()
-                            
+                            this.setState({
+                                message: response.data.message,
+                                token: response.data.token
+                            })
+                            this.props.addMessage(this.message);
+                            this.props.addToken(this.token);
+                            this.handleReset()
+                            this.setRedirect()
                             break;
                         }
                         default: {
@@ -108,7 +103,7 @@ export default class Login extends Component {
                         console.log(error.request);
                     } else {
                         // Something happened in setting up the request that triggered an Error
-                        console.log('Error: ', error.message);
+                        console.log('Error', error.message);
                     }
                     console.log(error.config);
                 })
@@ -116,7 +111,6 @@ export default class Login extends Component {
         } else {
             console.log('No input accepted');
         }
-        this.handleClearForm()
     }
 
 
@@ -139,40 +133,21 @@ export default class Login extends Component {
                 <div className="login_wrapper col-md-4 ml-auto mr-auto">
                     <section className="login_content ">
                         <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
-                            <form onSubmit={this.validateUser}>
+                            <form onSubmit={this.sendRequest}>
                                 <header>
-                                    <h4 style={this.style2}>User Login Form</h4>
+                                    <h4 style={this.style2}>Enter Your Email</h4>
                                 </header>
-
                                 <div>
-                                    <label htmlFor="Username">Username</label>
-                                    <input type="text" name="email" className="form-control"
-                                        placeholder="example@gh.gov"
-                                        value={this.state.email} 
-                                        onChange={this.handleInputChange} required autoFocus />
+                                    <label htmlFor="Password">Email</label>
+                                    <SingleInput
+                                        inputType={'email'}
+                                        name={'email'}
+                                        controlFunc={this.handleInputChange}
+                                        content={this.state.email}
+                                        placeholder={'Type email'} />
                                 </div>
-                                <br />
                                 <div>
-                                    <label htmlFor="Passsword">Password</label>
-                                    <input type="password" name="password" className="form-control"
-                                        placeholder="*************"
-                                        value={this.state.password} 
-                                        onChange={this.handleInputChange} required />
-                                </div>
-                                <br />
-                                <div>
-                                    <div>
-                                        <button className="btn btn-outline-success" type="submit" value="Submit" >Login</button>
-                                    </div>
-                                </div>
-
-                                <div className="clearfix"></div>
-
-                                <div className="separator">
-                                <div className="change_link">New to this site? <Link to={'/register'} className="nav-link"> Create Account </Link></div>
-                                <div className="change_link">Forgot password? <Link to={'/forgot-password-email'} className="nav-link"> Reset Password </Link></div>
-                                    <div className="clearfix"></div>
-                                    <br />
+                                    <button type="submit" className="btn btn-outline-success" value="Submit">Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -182,6 +157,21 @@ export default class Login extends Component {
         )
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,11 +1,15 @@
-import React from 'react';
-import './App.css';
-import Login from './Login';
+import React, { Component } from 'react';
+import './css/App.css';
 
-function App() {
-  return (
-      <Login />
-  )
+export default class App extends Component {
+  render() {
+    return (
+      <div>
+        <h1>Home</h1>
+      </div>
+
+    )
+  }
 }
 
-export default App;
+
