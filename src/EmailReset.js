@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 
 const styles = {
     style1: {
@@ -19,7 +19,7 @@ const API_URL = 'http://127.0.0.1:8000/api/resetpassword';
 export default class emailReset extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             message: '',
@@ -39,7 +39,7 @@ export default class emailReset extends Component {
         this.setState({
             [name]: value
         });
-    }
+    };
 
     handleReset = () => {
         this.setState({
@@ -52,15 +52,15 @@ export default class emailReset extends Component {
         this.setState({
             redirect: true
         })
-    }
+    };
     renderRedirect = () => {
         if (this.state.redirect) {
             return <Redirect to='/' />
         }
-    }
+    };
 
     sendRequest = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
             axios.post(API_URL, {
                 username: this.state.newPassword,
@@ -78,11 +78,11 @@ export default class emailReset extends Component {
                             this.setState({
                                 message: response.data.message,
                                 token: response.data.token
-                            })
+                            });
                             this.props.addMessage(this.message);
                             this.props.addToken(this.token);
-                            this.handleReset()
-                            this.setRedirect()
+                            this.handleReset();
+                            this.setRedirect();
                             break;
                         }
                         default: {
@@ -113,7 +113,7 @@ export default class emailReset extends Component {
         } else {
             console.log('No input accepted');
         }
-    }
+    };
 
 
 

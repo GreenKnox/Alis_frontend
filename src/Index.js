@@ -1,12 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from "react-redux";
-import {
-    Route,
-    BrowserRouter as Router,
-    Switch,
-    NavLink,
-} from 'react-router-dom'
+import {Provider} from "react-redux";
+import {BrowserRouter as Router, NavLink, Route, Switch,} from 'react-router-dom'
 import store from "./modules/store/index";
 import addMessage from "./modules/actions/index";
 import './css/index.css';
@@ -15,8 +10,8 @@ import App from './App';
 import loginMap from './mappings/loginMappings';
 import registerMap from './mappings/registerMappings';
 import resetPasswordMap from './mappings/resetPasswordMappings';
-import NotFound from './notfound';
-import forgotPassword from './forgotPassword';
+import NotFound from './NotFound';
+import ForgotPassword from './ForgotPassword';
 import EnterEmail from './EnterEmail';
 import * as serviceWorker from './serviceWorker';
 
@@ -28,11 +23,11 @@ const routingProvider = (
         <Router>
             <div>
                 <ul>
-                    <li>
-                        <NavLink exact activeClassName="active" to="/">
-                            Home
-                    </NavLink>
-                    </li>
+                    {/*<li>*/}
+                    {/*    <NavLink exact activeClassName="active" to="/">*/}
+                    {/*        Home*/}
+                    {/*</NavLink>*/}
+                    {/*</li>*/}
                     <li>
                         <NavLink exact activeClassName="active" to="/login">
                             Login
@@ -48,18 +43,18 @@ const routingProvider = (
                             Reset Password
                     </NavLink>
                     </li>
-                    <li>
-                        <NavLink exact activeClassName="active" to="/forgot-password">
-                        Forgot Password
-                    </NavLink>
-                    </li>
+                    {/*<li>*/}
+                    {/*    <NavLink exact activeClassName="active" to="/forgot-password">*/}
+                    {/*    Forgot Password*/}
+                    {/*</NavLink>*/}
+                    {/*</li>*/}
                 </ul>
                 <Switch>
                     <Route exact path="/" component={App} />
                     <Route path="/login" component={loginMap} />
                     <Route path="/register" component={registerMap} />
                     <Route path="/reset-password" component={resetPasswordMap} />
-                    <Route path="/forgot-password" component={forgotPassword} />
+                    <Route path="/forgot-password/:token" component={ForgotPassword}/>
                     <Route path="/forgot-password-email" component={EnterEmail} />
                     <Route component={NotFound} />
                 </Switch>
@@ -68,7 +63,7 @@ const routingProvider = (
 
     </Provider>
 
-)
+);
 
 ReactDOM.render(routingProvider, document.getElementById('root'));
 

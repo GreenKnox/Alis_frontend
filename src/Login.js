@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
-import { Redirect, Link } from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 
 
 const styles = {
@@ -20,14 +20,13 @@ const API_URL = 'http://127.0.0.1:8000/api/login';
 export default class Login extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             message: '',
             token: '',
             email: '',
-            password: '',
-            redirect: ''
+            password: ''
         }
 
     }
@@ -40,30 +39,23 @@ export default class Login extends Component {
         this.setState({
             [name]: value
         })
-    }
+    };
 
-    
-    handleClearForm = () => {  
+
+    handleClearForm = () => {
         this.setState({
             email: '',
             password: ''
         })
-      }
+    };
 
-    setRedirect = () => {
-        // this.setState({
-        //     redirect: true
-        // })
-        return true
-    }
-    renderRedirect = () => {
-        if (this.state.redirect) {
-            return <Redirect to='/' />
-        }
-    }
+    renderRedirect = (path) => {
+        return <Redirect to={'/${path}'}/>
+    };
+
 
     validateUser = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         if (this.state.email.trim() && this.state.password.trim()) {
             axios.post(API_URL, {
                 email: this.state.email,
@@ -72,20 +64,33 @@ export default class Login extends Component {
                 .then(function (response) {
                     console.log(response);
                     switch (response.status) {
+                        case 404: {
+                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                            console.log(`Error: ${response.message}`);
+                            // display notification that user was not found
+                            break;
+                        }
                         case 400: {
                             console.log(`Looks like there was a problem. Status Code: ${response.status}`);
                             console.log(`Error: ${response.message}`);
-                            this.handleClearForm(event)
+                            break;
+                        }
+                        case 401: {
+                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                            console.log(`Error: ${response.message}`);
+
+                            // password expired, display notification for some time and redirect to reset password
+                            this.renderRedirect('/reset-password');
                             break;
                         }
                         case 200: {
                             console.log("It worked");
                             this.props.addMessage(response.data.message);
                             this.props.addToken(response.data.token);
-                            // this.handleReset()
-                            this.redirect = this.handleReset
-                            // this.setRedirect()
-                            
+                            this.handleClearForm(event);
+                            // login successful, display notification for some time and redirect to home page
+                            this.renderRedirect('/');
+
                             break;
                         }
                         default: {
@@ -117,7 +122,7 @@ export default class Login extends Component {
             console.log('No input accepted');
         }
         this.handleClearForm()
-    }
+    };
 
 
 
@@ -147,17 +152,17 @@ export default class Login extends Component {
                                 <div>
                                     <label htmlFor="Username">Username</label>
                                     <input type="text" name="email" className="form-control"
-                                        placeholder="example@gh.gov"
-                                        value={this.state.email} 
-                                        onChange={this.handleInputChange} required autoFocus />
+                                           placeholder="example@gh.gov"
+                                           value={this.state.email}
+                                           onChange={this.handleInputChange} required autoFocus/>
                                 </div>
                                 <br />
                                 <div>
                                     <label htmlFor="Passsword">Password</label>
                                     <input type="password" name="password" className="form-control"
-                                        placeholder="*************"
-                                        value={this.state.password} 
-                                        onChange={this.handleInputChange} required />
+                                           placeholder="*************"
+                                           value={this.state.password}
+                                           onChange={this.handleInputChange} required/>
                                 </div>
                                 <br />
                                 <div>
@@ -169,8 +174,12 @@ export default class Login extends Component {
                                 <div className="clearfix"></div>
 
                                 <div className="separator">
-                                <div className="change_link">New to this site? <Link to={'/register'} className="nav-link"> Create Account </Link></div>
-                                <div className="change_link">Forgot password? <Link to={'/forgot-password-email'} className="nav-link"> Reset Password </Link></div>
+                                    <div className="change_link">New to this site? <Link to={'/register'}
+                                                                                         className="nav-link"> Create
+                                        Account </Link></div>
+                                    <div className="change_link">Forgot password? <Link to={'/forgot-password-email'}
+                                                                                        className="nav-link"> Reset
+                                        Password </Link></div>
                                     <div className="clearfix"></div>
                                     <br />
                                 </div>

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 
 const styles = {
     style1: {
@@ -13,17 +13,18 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/forgotpassword';
+const API_URL = 'http://127.0.0.1:8000/api/resetpassword';
 
 
-export default class forgotPassword extends Component {
+export default class passwordReset extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             message: '',
             token: '',
+            oldPassword: '',
             newPassword: '',
             confirmNewPassword: '',
             redirect: ''
@@ -39,10 +40,11 @@ export default class forgotPassword extends Component {
         this.setState({
             [name]: value
         });
-    }
+    };
 
     handleReset = () => {
         this.setState({
+            oldPassword: '',
             newPassword: '',
             confirmNewPassword: ''
         });
@@ -52,17 +54,18 @@ export default class forgotPassword extends Component {
         this.setState({
             redirect: true
         })
-    }
+    };
     renderRedirect = () => {
         if (this.state.redirect) {
             return <Redirect to='/' />
         }
-    }
+    };
 
     sendRequest = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
             axios.post(API_URL, {
+                oldpassword: this.state.oldPassword,
                 newpassword: this.state.newPassword
             })
                 .then(function (response) {
@@ -74,18 +77,14 @@ export default class forgotPassword extends Component {
                             break;
                         }
                         case 200: {
-                            this.setState({
-                                message: response.data.message,
-                                token: response.data.token
-                            })
-                            this.props.addMessage(this.message);
-                            this.props.addToken(this.token);
-                            this.handleReset()
-                            this.setRedirect()
+                            // password setting successful, display notification for some time and redirect to login page
+                            this.renderRedirect('/login');
                             break;
                         }
                         default: {
-                            //statements;
+                            console.log(`Looks like there was a problem of other status code. Status Code: ${response.status}`);
+                            console.log(`Error: ${response.message}`);
+                            break;
                             break;
                         }
                     }
@@ -112,7 +111,7 @@ export default class forgotPassword extends Component {
         } else {
             console.log('No input accepted');
         }
-    }
+    };
 
 
 
@@ -136,8 +135,17 @@ export default class forgotPassword extends Component {
                         <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
                             <form onSubmit={this.sendRequest}>
                                 <header>
-                                    <h4 style={this.style2}>Forgot Password</h4>
+                                    <h4 style={this.style2}>Reset Password</h4>
                                 </header>
+                                <div>
+                                    <label htmlFor="Password">Old Passsword</label>
+                                    <input type="text" name="oldpassword" className="form-control"
+                                        placeholder="************ "
+                                        value={this.state.oldPassword} 
+                                        onChange={this.handleInputChange} required autoFocus />
+                                </div>
+                                <br />
+
                                 <div>
                                     <label htmlFor="Password">New Passsword</label>
                                     <input type="text" name="newpassword" className="form-control"

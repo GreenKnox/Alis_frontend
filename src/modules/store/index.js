@@ -1,5 +1,5 @@
-// src/modules/store/index.js
-import { createStore } from "redux";
+// src/modules/store/Index.js
+import {createStore} from "redux";
 import rootReducer from "../reducers/index";
 
 

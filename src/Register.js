@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 
 
 const styles = {
@@ -19,7 +19,7 @@ const errorTexts = {};
 export default class Register extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
 
         this.state = {
@@ -56,7 +56,7 @@ export default class Register extends Component {
         this.setState({
             [name]: value
         });
-    }
+    };
 
     handleClearForm = () => {  
         this.setState({
@@ -82,24 +82,16 @@ export default class Register extends Component {
             district: '',
             region: ''
         })
-      }
+    };
 
-    setRedirect = () => {
-        this.setState({
-            redirect: true
-        })
-        
-    }
-    renderRedirect = () => {
-        if (this.state.redirect) {
-            return <Redirect to='/' />
-        }
-    }
+    renderRedirect = (path) => {
+        return <Redirect to={'/${path}'}/>
+    };
 
     // regex to validate urls
     validateUrl = (value) => {
         return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
-    }
+    };
 
     componentDidMount() {
         this.validateUser();
@@ -107,7 +99,7 @@ export default class Register extends Component {
 
     validateUser = () => {
         // initially set errorText.status to false
-        errorTexts.status = false
+        errorTexts.status = false;
         // loop through state vars to check if specific fields meet requirements
         // set errorText.status to true if at least one does not meet its requirement 
         // set error message for specific field
@@ -115,47 +107,47 @@ export default class Register extends Component {
             switch (temp.name) {
                 case "password":
                     if (temp.value.length < 8) {
-                        errorTexts.password = "password length must be more than 8"
+                        errorTexts.password = "password length must be more than 8";
                         errorTexts.status = true
                     }
-                    break
+                    break;
                 case "phone":
                     if (temp.value.length < 10) {
-                        errorTexts.phone = "phone number must be more than 10"
+                        errorTexts.phone = "phone number must be more than 10";
                         errorTexts.status = true
                     }
-                    break
+                    break;
                 case "fax":
                     if (temp.value.length < 10) {
-                        errorTexts.fax = "fax number must be more than 10"
+                        errorTexts.fax = "fax number must be more than 10";
                         errorTexts.status = true
                     }
-                    break
+                    break;
                 case "mobile":
                     if (temp.value.length < 10) {
-                        errorTexts.mobile = "mobile number must be more than 10"
+                        errorTexts.mobile = "mobile number must be more than 10";
                         errorTexts.status = true
                     }
-                    break
+                    break;
                 case "websiteaddress":
                     if (!this.validateUrl(temp.value)) {
                         errorTexts.websiteaddress = "incorrect website address\n"
-                            + "url should be in the format 'https://www.example.com'"
+                            + "url should be in the format 'https://www.example.com'";
                         errorTexts.status = true
                     }
-                    break
+                    break;
                 default:
                     return temp;
             }
         }
-    }
+    };
 
     sendRequest = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         // check if user passwords match
         if (this.state.password.trim() === this.state.passwordconfirmed) {
             // validate user inputs to check if accepted values has been entered
-            this.validateUser()
+            this.validateUser();
             // if errorTexts.status = false,  make post request to api and submit user details
             if (errorTexts.status === false) {
                 // make api request
@@ -198,7 +190,7 @@ export default class Register extends Component {
                                 // this.props.addMessage(response.data.message);
                                 // this.props.addToken(response.data.token);1
                                 // reset user inputs
-                                this.handleReset()
+                                this.handleReset();
                                 // redirect user to somewhere
                                 // this.setRedirect()
                                 break;
@@ -237,7 +229,7 @@ export default class Register extends Component {
                 console.log('Password Mismatch');
             }
             this.handleClearForm()
-    }
+    };
 
 
     render() {

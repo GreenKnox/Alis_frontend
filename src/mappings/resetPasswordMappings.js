@@ -1,7 +1,7 @@
 // src/mappings/registerMappings.js
 
-import { connect } from 'react-redux';
-import passwordReset from '../passwordReset';
+import {connect} from 'react-redux';
+import passwordReset from '../PasswordReset';
 
 const mapStateToProps = state => {
   return {

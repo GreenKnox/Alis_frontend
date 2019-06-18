@@ -1,4 +1,4 @@
-// src/modules/action/index.js
+// src/modules/action/Index.js
 
 const Types = {
     ADD_MESSAGE: "ADD_MESSAGE",

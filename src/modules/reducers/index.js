@@ -1,12 +1,12 @@
-// src/modules/reducers/index.js
+// src/modules/reducers/Index.js
 
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import loginReducer from './loginReducer';
 import registerReducer from './registerReducer';
 
 const rootReducer = combineReducers({
     loginReducer,
     registerReducer
-})
+});
 
 export default rootReducer

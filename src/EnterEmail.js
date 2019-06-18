@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import SingleInput from './SingleInput'
-import { Redirect } from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 
 const styles = {
     style1: {
@@ -20,7 +20,7 @@ const API_URL = 'http://127.0.0.1:8000/api/passwordreset';
 export default class EnterEmail extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             message: '',
@@ -39,7 +39,7 @@ export default class EnterEmail extends Component {
         this.setState({
             [name]: value
         });
-    }
+    };
 
     handleReset = () => {
         this.setState({
@@ -51,40 +51,41 @@ export default class EnterEmail extends Component {
         this.setState({
             redirect: true
         })
-    }
-    renderRedirect = () => {
+    };
+    renderRedirect = (data = 100) => {
         if (this.state.redirect) {
-            return <Redirect to='/' />
+            return <Redirect to={{
+                pathname: '/forgot-password',
+                code: data
+            }}/>
         }
-    }
+    };
 
     sendRequest = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         if (this.state.email.trim()) {
-            axios.post(API_URL, {
-                email: this.state.email
-            })
+            axios.post(API_URL, {email: this.state.email})
                 .then(function (response) {
                     console.log(response);
                     switch (response.status) {
-                        case 400: {
-                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        case 404: {
+                            console.log(`User not found Status Code: ${response.status}`);
                             console.log(`Error: ${response.message}`);
+                            // then display notification to user that the email does not exist in the database
                             break;
                         }
                         case 200: {
                             this.setState({
                                 message: response.data.message,
                                 token: response.data.token
-                            })
-                            this.props.addMessage(this.message);
-                            this.props.addToken(this.token);
-                            this.handleReset()
-                            this.setRedirect()
+                            });
+                            this.handleReset();
+                            // then display notification to user that email verification has been sent to the mail for password reset
                             break;
                         }
                         default: {
                             //statements;
+                            //todo: other error codes
                             break;
                         }
                     }
@@ -111,11 +112,7 @@ export default class EnterEmail extends Component {
         } else {
             console.log('No input accepted');
         }
-    }
-
-
-
-
+    };
 
 
 
