@@ -1,4 +1,4 @@
-// src/modules/reducers/Index.js
+// src/modules/reducers/index.js
 
 import {combineReducers} from 'redux';
 import loginReducer from './loginReducer';

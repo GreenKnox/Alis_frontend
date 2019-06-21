@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import NotFound from './NotFound'
+import axios from 'axios/index';
+import NotFound from '../../NotFound'
+import * as env from '../../config'
 import {Redirect} from 'react-router-dom'
+import queryString from "query-string";
 
 const styles = {
     style1: {
@@ -14,21 +16,19 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/forgotpassword';
-
 
 export default class ForgotPassword extends Component {
 
     constructor(props) {
         super(props);
+        const values = queryString.parse(this.props.location.search);
 
         this.state = {
-            message: '',
-            token: '',
+            id: values._uid,
+            token: values._tk_n,
             newPassword: '',
             confirmNewPassword: '',
-            redirect: '',
-            code: 100
+            cond: 'pending'
         }
 
     }
@@ -50,62 +50,58 @@ export default class ForgotPassword extends Component {
         });
     };
 
-    setRedirect = () => {
-        this.setState({
-            redirect: true
-        })
-    };
-
     renderRedirect = (path) => {
-        return <Redirect to={'/${path}'}/>
+        return <Redirect to={`/${path}`}/>
     };
 
-    verifyToken = (data) => {
-        axios.post(API_URL, {token: data})
-            .then(function (response) {
-                console.log(response);
-                switch (response.status) {
-                    case 400: {
-                        console.log(`Looks like the token doesnt exist. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        return false;
-                        break;
-                    }
-                    case 200: {
-                        return true;
-                        break;
-                    }
-                    default: {
-                        //statements;
-                        break;
-                    }
+    verifyToken = async (token, id) => {
+        try {
+            const response = await axios.post(`${env.API_URL}/postForgot `, {
+                params: {
+                    _uid: this.state.id,
+                    _tk_n: this.state.token,
                 }
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                    // http.ClientRequest in node.js
-                    console.log(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.log('Error', error.message);
-                }
-                console.log(error.config);
-            })
-
+            });
+            console.log(response.status);
+            switch (response.status) {
+                case 200:
+                    this.setState({
+                        cond: "true",
+                    });
+                    break;
+                default:
+                    //statements;
+                    console.log(`Error: ${response}`);
+                    break;
+            }
+        } catch (error) {
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
+            this.setState({
+                cond: "false",
+            });
+        }
+        return this.state.cond
     };
 
     sendRequest = (event) => {
         event.preventDefault();
         if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
-            axios.post(API_URL, {newpassword: this.state.newPassword})
+            axios.post(`${env.API_URL}/forgotpassword`, {newpassword: this.state.newPassword})
                 .then(function (response) {
                     console.log(response);
                     switch (response.status) {
@@ -117,7 +113,7 @@ export default class ForgotPassword extends Component {
                         case 200: {
                             this.handleReset();
                             // display to user a notification showing that the password reset was sucessfull and redirect to login
-                            this.renderRedirect("/login");
+                            this.renderRedirect("login");
                             break;
                         }
                         default: {
@@ -151,7 +147,9 @@ export default class ForgotPassword extends Component {
         }
     };
 
-
+    async componentDidMount() {
+        await this.verifyToken();
+    }
 
     render() {
         const {match: {params}} = this.props;

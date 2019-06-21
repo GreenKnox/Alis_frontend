@@ -1,7 +1,7 @@
 // src/mappings/loginMappings.js
 
 import {connect} from 'react-redux';
-import Login from '../Login';
+import Login from '../Users/Login';
 
 const mapStateToProps = state => {
   return {

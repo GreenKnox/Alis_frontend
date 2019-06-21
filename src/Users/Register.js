@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import axios from 'axios/index';
 import {Redirect} from 'react-router-dom'
+import * as env from '../config'
 
 
 const styles = {
@@ -13,7 +14,7 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/register';
+// const API_URL = 'http://127.0.0.1:8000/api/register';
 const errorTexts = {};
 
 export default class Register extends Component {
@@ -21,7 +22,7 @@ export default class Register extends Component {
     constructor(props) {
         super(props);
 
-
+        //todo store registration requirements into a object and call it wherever needed
         this.state = {
             firstname: '',
             lastname: '',
@@ -85,7 +86,7 @@ export default class Register extends Component {
     };
 
     renderRedirect = (path) => {
-        return <Redirect to={'/${path}'}/>
+        return <Redirect to={`/${path}`}/>
     };
 
     // regex to validate urls
@@ -151,7 +152,7 @@ export default class Register extends Component {
             // if errorTexts.status = false,  make post request to api and submit user details
             if (errorTexts.status === false) {
                 // make api request
-                axios.post(API_URL, {
+                axios.post(`${env.API_URL}/register`, {
                     username: this.state.username,
                     password: this.state.password,
                     password_confirmation: this.state.passwordconfirmed,
@@ -192,7 +193,7 @@ export default class Register extends Component {
                                 // reset user inputs
                                 this.handleReset();
                                 // redirect user to somewhere
-                                // this.setRedirect()
+                                this.setRedirect("login");
                                 break;
                             }
                             default: {

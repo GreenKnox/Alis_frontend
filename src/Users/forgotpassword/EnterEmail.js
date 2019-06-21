@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import axios from 'axios/index';
+import SingleInput from '../../components/SingleInput'
 import {Redirect} from 'react-router-dom'
+import * as env from '../../config'
 
 const styles = {
     style1: {
@@ -13,10 +15,10 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/resetpassword';
+// const API_URL = 'http://127.0.0.1:8000/api/passwordreset';
 
 
-export default class emailReset extends Component {
+export default class EnterEmail extends Component {
 
     constructor(props) {
         super(props);
@@ -24,8 +26,7 @@ export default class emailReset extends Component {
         this.state = {
             message: '',
             token: '',
-            newPassword: '',
-            confirmNewPassword: '',
+            email: '',
             redirect: ''
         }
 
@@ -43,8 +44,7 @@ export default class emailReset extends Component {
 
     handleReset = () => {
         this.setState({
-            newPassword: '',
-            confirmNewPassword: ''
+            email: ''
         });
     };
 
@@ -53,40 +53,40 @@ export default class emailReset extends Component {
             redirect: true
         })
     };
-    renderRedirect = () => {
+    renderRedirect = (data = 100) => {
         if (this.state.redirect) {
-            return <Redirect to='/' />
+            return <Redirect to={{
+                pathname: '/forgot-password',
+                code: data
+            }}/>
         }
     };
 
     sendRequest = (event) => {
         event.preventDefault();
-        if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
-            axios.post(API_URL, {
-                username: this.state.newPassword,
-                password: this.state.confirmNewPassword,
-            })
+        if (this.state.email.trim()) {
+            axios.post(`${env.API_URL}/preForgot`, {email: this.state.email})
                 .then(function (response) {
                     console.log(response);
                     switch (response.status) {
-                        case 400: {
-                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        case 404: {
+                            console.log(`User not found Status Code: ${response.status}`);
                             console.log(`Error: ${response.message}`);
+                            // then display notification to user that the email does not exist in the database
                             break;
                         }
                         case 200: {
-                            this.setState({
-                                message: response.data.message,
-                                token: response.data.token
-                            });
-                            this.props.addMessage(this.message);
-                            this.props.addToken(this.token);
+                            // this.setState({
+                            //     message: response.data.message,
+                            //     token: response.data.token
+                            // });
                             this.handleReset();
-                            this.setRedirect();
+                            // then display notification to user that email verification has been sent to the mail for password reset
                             break;
                         }
                         default: {
                             //statements;
+                            //todo: other error codes
                             break;
                         }
                     }
@@ -111,13 +111,10 @@ export default class emailReset extends Component {
                 })
 
         } else {
+            // todo: add error display
             console.log('No input accepted');
         }
     };
-
-
-
-
 
 
 
@@ -137,26 +134,17 @@ export default class emailReset extends Component {
                         <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
                             <form onSubmit={this.sendRequest}>
                                 <header>
-                                    <h4 style={this.style2}>Reset Password</h4>
+                                    <h4 style={this.style2}>Enter Your Email</h4>
                                 </header>
-
                                 <div>
-                                    <label htmlFor="Password">New Passsword</label>
-                                    <input type="text" name="email" className="form-control"
-                                        placeholder="************ "
-                                        value={this.state.newPassword} 
-                                        onChange={this.handleInputChange} required autoFocus />
+                                    <label htmlFor="Password">Email</label>
+                                    <SingleInput
+                                        inputType={'email'}
+                                        name={'email'}
+                                        controlFunc={this.handleInputChange}
+                                        content={this.state.email}
+                                        placeholder={'Type email'} />
                                 </div>
-                                <br />
-                                <div>
-                                    <label htmlFor="Passsword">Confirm Password</label>
-                                    <input type="password" name="password" className="form-control"
-                                        placeholder="e.g.,*************"
-                                        value={this.state.confirmNewPassword} 
-                                        onChange={this.handleInputChange} required />
-                                </div>
-                                <br />
-                                
                                 <div>
                                     <button type="submit" className="btn btn-outline-success" value="Submit">Submit</button>
                                 </div>
@@ -168,6 +156,21 @@ export default class emailReset extends Component {
         )
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import axios from 'axios/index';
+import * as env from '../../config'
 import {Redirect} from 'react-router-dom'
 
 const styles = {
@@ -12,9 +13,6 @@ const styles = {
         color: '#636e72'
     }
 };
-
-const API_URL = 'http://127.0.0.1:8000/api/resetpassword';
-
 
 export default class passwordReset extends Component {
 
@@ -50,21 +48,14 @@ export default class passwordReset extends Component {
         });
     };
 
-    setRedirect = () => {
-        this.setState({
-            redirect: true
-        })
-    };
-    renderRedirect = () => {
-        if (this.state.redirect) {
-            return <Redirect to='/' />
-        }
+    renderRedirect = (path) => {
+        return <Redirect to={`/${path}`}/>
     };
 
     sendRequest = (event) => {
         event.preventDefault();
         if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
-            axios.post(API_URL, {
+            axios.post(`${env.API_URL}/passwordreset`, {
                 oldpassword: this.state.oldPassword,
                 newpassword: this.state.newPassword
             })
@@ -78,14 +69,14 @@ export default class passwordReset extends Component {
                         }
                         case 200: {
                             // password setting successful, display notification for some time and redirect to login page
-                            this.renderRedirect('/login');
+                            this.renderRedirect('login');
                             break;
                         }
                         default: {
-                            console.log(`Looks like there was a problem of other status code. Status Code: ${response.status}`);
+                            console.log(`Looks like there was a problem of another status code. Status Code: ${response.status}`);
                             console.log(`Error: ${response.message}`);
                             break;
-                            break;
+
                         }
                     }
                 })
@@ -112,9 +103,6 @@ export default class passwordReset extends Component {
             console.log('No input accepted');
         }
     };
-
-
-
 
 
 

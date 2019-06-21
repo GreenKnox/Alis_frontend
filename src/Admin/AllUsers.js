@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import axios from 'axios/index';
+import * as env from '../config'
 import {Link, Redirect} from 'react-router-dom'
 
 
@@ -14,19 +15,13 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/login';
-
-
-export default class Login extends Component {
+export default class AllUsers extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            message: '',
             token: '',
-            email: '',
-            password: ''
         }
 
     }
@@ -50,17 +45,14 @@ export default class Login extends Component {
     };
 
     renderRedirect = (path) => {
-        return <Redirect to={'/${path}'}/>
+        return <Redirect to={`/${path}`}/>
     };
 
 
     validateUser = (event) => {
         event.preventDefault();
         if (this.state.email.trim() && this.state.password.trim()) {
-            axios.post(API_URL, {
-                email: this.state.email,
-                password: this.state.password,
-            })
+            axios.get(`${env.API_URL}/all-users`)
                 .then(function (response) {
                     console.log(response);
                     switch (response.status) {
@@ -80,13 +72,11 @@ export default class Login extends Component {
                             console.log(`Error: ${response.message}`);
 
                             // password expired, display notification for some time and redirect to reset password
-                            this.renderRedirect('/reset-password');
+                            this.renderRedirect('reset-password');
                             break;
                         }
                         case 200: {
                             console.log("It worked");
-                            this.props.addMessage(response.data.message);
-                            this.props.addToken(response.data.token);
                             this.handleClearForm(event);
                             // login successful, display notification for some time and redirect to home page
                             this.renderRedirect('/');
@@ -125,11 +115,6 @@ export default class Login extends Component {
     };
 
 
-
-
-
-
-
     render() {
         return (
             <div>
@@ -156,7 +141,7 @@ export default class Login extends Component {
                                            value={this.state.email}
                                            onChange={this.handleInputChange} required autoFocus/>
                                 </div>
-                                <br />
+                                <br/>
                                 <div>
                                     <label htmlFor="Passsword">Password</label>
                                     <input type="password" name="password" className="form-control"
@@ -164,10 +149,11 @@ export default class Login extends Component {
                                            value={this.state.password}
                                            onChange={this.handleInputChange} required/>
                                 </div>
-                                <br />
+                                <br/>
                                 <div>
                                     <div>
-                                        <button className="btn btn-outline-success" type="submit" value="Submit" >Login</button>
+                                        <button className="btn btn-outline-success" type="submit" value="Submit">Login
+                                        </button>
                                     </div>
                                 </div>
 
@@ -181,7 +167,7 @@ export default class Login extends Component {
                                                                                         className="nav-link"> Reset
                                         Password </Link></div>
                                     <div className="clearfix"></div>
-                                    <br />
+                                    <br/>
                                 </div>
                             </form>
                         </div>
