@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import '../css/App.css';
-import * as env from '../config'
 
 
 export default class App extends Component {
@@ -9,15 +8,16 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      url: env.API_URL
-    }
+      isLoggedIn: false,
+      user: {}
+    };
 
   }
 
   render() {
     return (
       <div>
-        {this.state.url}
+        Home
       </div>
 
     )

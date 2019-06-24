@@ -85,9 +85,25 @@ export default class Login extends Component {
                             break;
                         }
                         case 200: {
-                            console.log("It worked");
-                            this.props.addMessage(response.data.message);
-                            this.props.addToken(response.data.token);
+                            alert("Login Successful!");
+
+                            let userData = {
+                                name: response.data.username,
+                                id: response.data.id,
+                                email: response.data.email,
+                                auth_token: response.data.token,
+                                timestamp: new Date().toString()
+                            };
+                            let appState = {
+                                isLoggedIn: true,
+                                user: userData
+                            };
+                            // save app state with user date in local storage
+                            localStorage["appState"] = JSON.stringify(appState);
+                            this.setState({
+                                isLoggedIn: appState.isLoggedIn,
+                                user: appState.user
+                            });
                             this.handleClearForm(event);
                             // login successful, display notification for some time and redirect to home page
                             this.renderRedirect('/');

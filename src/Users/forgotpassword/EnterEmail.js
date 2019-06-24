@@ -76,10 +76,6 @@ export default class EnterEmail extends Component {
                             break;
                         }
                         case 200: {
-                            // this.setState({
-                            //     message: response.data.message,
-                            //     token: response.data.token
-                            // });
                             this.handleReset();
                             // then display notification to user that email verification has been sent to the mail for password reset
                             break;
