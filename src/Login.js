@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect, Link } from 'react-router-dom'
+import ReactNotification from "react-notifications-component";
+import "react-notifications-component/dist/theme.css";
 
 
 const styles = {
@@ -118,6 +120,19 @@ export default class Login extends Component {
         }
         this.handleClearForm()
     }
+    addNotification() {
+        this.notificationDOMRef.current.addNotification({
+            title: "Awesomeness",
+            message: "Awesome Notifications!",
+            type: "success",
+            insert: "top",
+            container: "top-right",
+            animationIn: ["animated", "fadeIn"],
+            animationOut: ["animated", "fadeOut"],
+            dismiss: { duration: 2000 },
+            dismissable: { click: true }
+        });
+    }
 
 
 
@@ -162,7 +177,7 @@ export default class Login extends Component {
                                 <br />
                                 <div>
                                     <div>
-                                        <button className="btn btn-outline-success" type="submit" value="Submit" >Login</button>
+                                        <button onClick={this.addNotification} className="btn btn-outline-success" type="submit" value="Submit" >Login</button>
                                     </div>
                                 </div>
 
