@@ -179,17 +179,6 @@ export default class Admin extends Component {
                                 </a>
                             </li>
                         </ul>
-
-                        <ul className="list-unstyled CTAs">
-                            <li>
-                                <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" className="download">Download
-                                    source</a>
-                            </li>
-                            <li>
-                                <a href="https://bootstrapious.com/p/bootstrap-sidebar" className="article">Back to
-                                    article</a>
-                            </li>
-                        </ul>
                     </nav>
 
 
@@ -198,10 +187,6 @@ export default class Admin extends Component {
                         <nav className="navbar navbar-expand-lg navbar-light bg-light">
                             <div className="container-fluid">
 
-                                <button type="button" id="sidebarCollapse" className="btn btn-info">
-                                    <i className="fas fa-align-left"></i>
-                                    <span>Toggle Sidebar</span>
-                                </button>
                                 <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
                                         data-toggle="collapse" data-target="#navbarSupportedContent"
                                         aria-controls="navbarSupportedContent" aria-expanded="false"
