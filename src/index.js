@@ -18,6 +18,7 @@ import resetPasswordMap from './mappings/resetPasswordMappings';
 import NotFound from './notfound';
 import forgotPassword from './forgotPassword';
 import EnterEmail from './EnterEmail';
+import Admin from './Admin/Admin';
 import * as serviceWorker from './serviceWorker';
 
 window.store = store;
@@ -53,6 +54,11 @@ const routingProvider = (
                         Forgot Password
                     </NavLink>
                     </li>
+                    <li>
+                    <NavLink exact activeClassName="active" to="/Admin">
+                        Admin page
+                    </NavLink>
+                    </li>
                 </ul>
                 <Switch>
                     <Route exact path="/" component={App} />
@@ -61,6 +67,7 @@ const routingProvider = (
                     <Route path="/reset-password" component={resetPasswordMap} />
                     <Route path="/forgot-password" component={forgotPassword} />
                     <Route path="/forgot-password-email" component={EnterEmail} />
+                    <Route path="/Admin" component={Admin} />
                     <Route component={NotFound} />
                 </Switch>
             </div>
