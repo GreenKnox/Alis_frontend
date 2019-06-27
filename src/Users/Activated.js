@@ -13,7 +13,7 @@ export default class Activated extends Component {
         this.state = {
             id: values._uid,
             token: values._tk_n,
-            cond: 'pending'
+            cond: false
         }
 
     }
@@ -40,7 +40,7 @@ export default class Activated extends Component {
         return <Redirect to={`/${path}`}/>
     };
 
-    verifyToken = async (token, id) => {
+    verifyToken = async () => {
         try {
             const response = await axios.get(`${env.API_URL}/activated`, {
                 params: {
@@ -52,7 +52,7 @@ export default class Activated extends Component {
             switch (response.status) {
                 case 200:
                     this.setState({
-                        cond: "true",
+                        cond: true
                     });
                     break;
                 default:
@@ -139,7 +139,7 @@ export default class Activated extends Component {
 
     render() {
         const {cond} = this.state;
-        if (cond === "true") {
+        if (cond === true) {
             return (
                 <div>
                     <div className="login_wrapper col-md-4 ml-auto mr-auto">

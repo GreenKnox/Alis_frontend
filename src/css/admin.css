@@ -218,7 +218,7 @@ span {
 }
 
 #sidebar.active {
-    min-width: 80px;
+    min-width: 105px;
     max-width: 80px;
     text-align: center;
 }

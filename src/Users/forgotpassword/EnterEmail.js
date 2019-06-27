@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import axios from 'axios/index';
 import SingleInput from '../../components/SingleInput'
 import {Redirect} from 'react-router-dom'
-import * as env from '../../config'
 
 const styles = {
     style1: {
@@ -15,19 +13,13 @@ const styles = {
     }
 };
 
-// const API_URL = 'http://127.0.0.1:8000/api/passwordreset';
-
-
 export default class EnterEmail extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            message: '',
-            token: '',
             email: '',
-            redirect: ''
         }
 
     }
@@ -42,73 +34,27 @@ export default class EnterEmail extends Component {
         });
     };
 
+
+    renderRedirect = (path) => {
+        return <Redirect to={`/${path}`}/>
+    };
+
+
     handleReset = () => {
         this.setState({
             email: ''
         });
     };
 
-    setRedirect = () => {
-        this.setState({
-            redirect: true
-        })
-    };
-    renderRedirect = (data = 100) => {
-        if (this.state.redirect) {
-            return <Redirect to={{
-                pathname: '/forgot-password',
-                code: data
-            }}/>
-        }
-    };
 
     sendRequest = (event) => {
         event.preventDefault();
         if (this.state.email.trim()) {
-            axios.post(`${env.API_URL}/preForgot`, {email: this.state.email})
-                .then(function (response) {
-                    console.log(response);
-                    switch (response.status) {
-                        case 404: {
-                            console.log(`User not found Status Code: ${response.status}`);
-                            console.log(`Error: ${response.message}`);
-                            // then display notification to user that the email does not exist in the database
-                            break;
-                        }
-                        case 200: {
-                            this.handleReset();
-                            // then display notification to user that email verification has been sent to the mail for password reset
-                            break;
-                        }
-                        default: {
-                            //statements;
-                            //todo: other error codes
-                            break;
-                        }
-                    }
-                })
-                .catch(function (error) {
-                    if (error.response) {
-                        // The request was made and the server responded with a status code
-                        // that falls out of the range of 2xx
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                        // http.ClientRequest in node.js
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log('Error', error.message);
-                    }
-                    console.log(error.config);
-                })
-
+            this.props.forgotPassword(this.state.email.trim());
+            this.handleReset();
         } else {
             // todo: add error display
-            console.log('No input accepted');
+            alert('No input accepted');
         }
     };
 

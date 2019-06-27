@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import axios from 'axios/index';
-import * as env from '../config'
 import {Link, Redirect} from 'react-router-dom'
 
 
@@ -15,8 +13,6 @@ const styles = {
     }
 };
 
-// const API_URL = 'http://127.0.0.1:8000/api/login';
-
 
 export default class Login extends Component {
 
@@ -24,8 +20,6 @@ export default class Login extends Component {
         super(props);
 
         this.state = {
-            message: '',
-            token: '',
             email: '',
             password: ''
         }
@@ -58,90 +52,12 @@ export default class Login extends Component {
     validateUser = (event) => {
         event.preventDefault();
         if (this.state.email.trim() && this.state.password.trim()) {
-            axios.post(`${env.API_URL}/login`, {
-                email: this.state.email,
-                password: this.state.password,
-            })
-                .then(function (response) {
-                    console.log(response);
-                    switch (response.status) {
-                        case 404: {
-                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                            console.log(`Error: ${response.message}`);
-                            // display notification that user was not found
-                            break;
-                        }
-                        case 400: {
-                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                            console.log(`Error: ${response.message}`);
-                            break;
-                        }
-                        case 401: {
-                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                            console.log(`Error: ${response.message}`);
-
-                            // password expired, display notification for some time and redirect to reset password
-                            this.renderRedirect('reset-password');
-                            break;
-                        }
-                        case 200: {
-                            alert("Login Successful!");
-
-                            let userData = {
-                                name: response.data.username,
-                                id: response.data.id,
-                                email: response.data.email,
-                                auth_token: response.data.token,
-                                timestamp: new Date().toString()
-                            };
-                            let appState = {
-                                isLoggedIn: true,
-                                user: userData
-                            };
-                            // save app state with user date in local storage
-                            localStorage["appState"] = JSON.stringify(appState);
-                            this.setState({
-                                isLoggedIn: appState.isLoggedIn,
-                                user: appState.user
-                            });
-                            this.handleClearForm(event);
-                            // login successful, display notification for some time and redirect to home page
-                            this.renderRedirect('/');
-
-                            break;
-                        }
-                        default: {
-                            //statements;
-                            break;
-                        }
-                    }
-                })
-                .catch(function (error) {
-                    if (error.response) {
-                        // The request was made and the server responded with a status code
-                        // that falls out of the range of 2xx
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                        // http.ClientRequest in node.js
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log('Error: ', error.message);
-                    }
-                    console.log(error.config);
-                })
-
+            this.props.loginUser(this.state.email, this.state.password);
         } else {
             console.log('No input accepted');
         }
         this.handleClearForm()
     };
-
-
 
 
 

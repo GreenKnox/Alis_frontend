@@ -28,7 +28,7 @@ export default class ForgotPassword extends Component {
             token: values._tk_n,
             newPassword: '',
             confirmNewPassword: '',
-            cond: 'pending'
+            cond: false
         }
 
     }
@@ -43,6 +43,7 @@ export default class ForgotPassword extends Component {
         });
     };
 
+
     handleReset = () => {
         this.setState({
             newPassword: '',
@@ -50,13 +51,15 @@ export default class ForgotPassword extends Component {
         });
     };
 
+
     renderRedirect = (path) => {
         return <Redirect to={`/${path}`}/>
     };
 
-    verifyToken = async (token, id) => {
+
+    verifyToken = async () => {
         try {
-            const response = await axios.post(`${env.API_URL}/postForgot `, {
+            const response = await axios.post(`${env.API_URL}/checkTokens `, {
                 params: {
                     _uid: this.state.id,
                     _tk_n: this.state.token,
@@ -66,7 +69,7 @@ export default class ForgotPassword extends Component {
             switch (response.status) {
                 case 200:
                     this.setState({
-                        cond: "true",
+                        cond: true
                     });
                     break;
                 default:
@@ -98,63 +101,26 @@ export default class ForgotPassword extends Component {
         return this.state.cond
     };
 
+
     sendRequest = (event) => {
         event.preventDefault();
         if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
-            axios.post(`${env.API_URL}/forgotpassword`, {newpassword: this.state.newPassword})
-                .then(function (response) {
-                    console.log(response);
-                    switch (response.status) {
-                        case 400: {
-                            console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                            console.log(`Error: ${response.message}`);
-                            break;
-                        }
-                        case 200: {
-                            this.handleReset();
-                            // display to user a notification showing that the password reset was sucessfull and redirect to login
-                            this.renderRedirect("login");
-                            break;
-                        }
-                        default: {
-                            console.log(`Looks like there was a problem of other status code. Status Code: ${response.status}`);
-                            console.log(`Error: ${response.message}`);
-                            break;
-                        }
-                    }
-                })
-                .catch(function (error) {
-                    if (error.response) {
-                        // The request was made and the server responded with a status code
-                        // that falls out of the range of 2xx
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                        // http.ClientRequest in node.js
-                        console.log(error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log('Error', error.message);
-                    }
-                    console.log(error.config);
-                })
-
+            this.props.forgotPassword(this.state.newPassword);
+            this.handleReset()
         } else {
             console.log('Passwords do not match');
         }
     };
+
 
     async componentDidMount() {
         await this.verifyToken();
     }
 
     render() {
-        const {match: {params}} = this.props;
+        const {cond} = this.state;
 
-        if (this.verifyToken(params.token)) {
+        if (cond === true) {
             return (
                 <div>
 

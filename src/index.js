@@ -1,192 +1,785 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider} from "react-redux";
 import axios from 'axios/index';
-import {BrowserRouter as Router, NavLink, Route, Switch,} from 'react-router-dom'
-import store from "./modules/store/index";
+import {BrowserRouter as Router, Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import './css/index.css';
 
-import App from './Home/App';
+import Home from './Home/Home';
+
 import Admin from './Admin/Admin'
-import Activated from './Users/Activated'
-import loginMap from './mappings/loginMappings';
-import registerMap from './mappings/registerMappings';
-import resetPasswordMap from './mappings/resetPasswordMappings';
+import Login from './Users/Login'
+import Logout from './Users/Logout'
 import NotFound from './NotFound';
-import ForgotPassword from './Users/forgotpassword/ForgotPassword';
+import Register from './Users/Register'
+import Activated from './Users/Activated'
 import EnterEmail from './Users/forgotpassword/EnterEmail';
+import resetPasswordMap from './mappings/resetPasswordMappings';
+import ForgotPassword from './Users/forgotpassword/ForgotPassword';
+
 import * as serviceWorker from './serviceWorker';
 import * as env from "./config";
 
 
-_renderRedirect = (path) => {
-    return <Redirect to={`/${path}`}/>
-};
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: false,
+            user: {}
+        };
+    }
+
+    _renderRedirect = (path) => {
+        return <Redirect to={`/${path}`}/>
+    };
 
 
-_loginUser = (email, password) => {
-
-    var formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-
-
-    axios.post(`${env.API_URL}/login`, formData)
-        .then(response => {
-            switch (response.status) {
-                case 404: {
-                    console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                    console.log(`Error: ${response.message}`);
-                    // display notification that user was not found
-                    alert("User Not Found!");
-                    break;
-                }
-                case 400: {
-                    console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                    console.log(`Error: ${response.message}`);
-                    alert("Error!");
-                    break;
-                }
-                case 401: {
-                    console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                    console.log(`Error: ${response.message}`);
-                    // password expired, display notification for some time and redirect to reset password
-                    alert("Password Expired, Reset Password!");
-                    setTimeout(this.renderRedirect('reset-password'), 15000);
-                    break;
-                }
-                case 200: {
-                    alert("Login Successful!");
-
-                    let userData = {
-                        name: response.data.username,
-                        id: response.data.id,
-                        email: response.data.email,
-                        auth_token: response.data.token,
-                        timestamp: new Date().toString()
-                    };
-                    let appState = {
-                        isLoggedIn: true,
-                        user: userData
-                    };
-                    // save app state with user date in local storage
-                    localStorage["appState"] = JSON.stringify(appState);
-                    this.setState({
-                        isLoggedIn: appState.isLoggedIn,
-                        user: appState.user
-                    });
-                    // login successful, display notification for some time and redirect to home page
-                    this.renderRedirect('/');
-
-                    break;
-                }
-                default: {
-                    //statements;
-                    break;
-                }
-            }
+    _loginUser = (userEmail, userPassword) => {
+        axios.post(`${env.API_URL}/login`, {
+            email: userEmail,
+            password: userPassword,
         })
-        .catch(function (error) {
-            if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-            } else if (error.request) {
-                // The request was made but no response was received
-                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                // http.ClientRequest in node.js
-                console.log(error.request);
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                console.log('Error: ', error.message);
-            }
-            console.log(error.config);
+            .then(response => {
+                switch (response.status) {
+                    case 404: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // display notification that user was not found
+                        alert("User Not Found!");
+                        break;
+                    }
+                    case 400: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        alert("Error!");
+                        break;
+                    }
+                    case 401: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // password expired, display notification for some time and redirect to reset password
+                        alert("Password Expired, Reset Password!");
+                        setTimeout(this._renderRedirect('reset-password'), 15000);
+                        break;
+                    }
+                    case 200: {
+                        alert("Login Successful!");
+                        let userData = {
+                            name: response.data.data.username,
+                            id: response.data.data.id,
+                            email: response.data.data.email,
+                            token: response.data.token,
+                            timestamp: new Date().toString()
+                        };
+                        let appState = {
+                            isLoggedIn: true,
+                            user: userData
+                        };
+                        // save app state with user date in local storage
+                        localStorage["appState"] = JSON.stringify(appState);
+                        this.setState({
+                            isLoggedIn: appState.isLoggedIn,
+                            user: appState.user
+                        });
+                        // login successful, display notification for some time and redirect to home page
+                        this._renderRedirect('/');
+
+                        break;
+                    }
+                    default: {
+                        console.log("Nothing was posted");
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error: ', error.message);
+                }
+            })
+    };
+
+
+    _logoutUser = () => {
+        let appState = {
+            isLoggedIn: false,
+            user: {}
+        };
+
+
+        axios.defaults.headers.common = {'Authorization': `Bearer ${this.state.user.token}`};
+        axios.post(`${env.API_URL}/logout`)
+            .then(response => {
+                switch (response.status) {
+                    case 404: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // display notification that user was not found
+                        alert("User Not Found!");
+                        break;
+                    }
+                    case 400: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        alert("Error!");
+                        break;
+                    }
+                    case 401: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // password expired, display notification for some time and redirect to reset password
+                        alert("Password Expired, Reset Password!");
+                        setTimeout(this._renderRedirect('reset-password'), 15000);
+                        break;
+                    }
+                    case 200: {
+                        alert("Logout Successful!");
+                        localStorage["appState"] = JSON.stringify(appState);
+                        localStorage.removeItem('appState');
+                        this.setState(appState);
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error: ', error.message);
+                }
+                console.log(error.config);
+            });
+
+        localStorage["appState"] = JSON.stringify(appState);
+        this.setState(appState);
+
+    };
+
+
+    _registerUser = (userData) => {
+
+        axios.post(`${env.API_URL}/register`, {
+            username: userData.username,
+            password: userData.password,
+            password_confirmation: userData.passwordconfirmed,
+            first_name: userData.firstname,
+            last_name: userData.lastname,
+            status: userData.status,
+            company_id: userData.companyid,
+            staff_number: userData.staffnumber,
+            title: userData.title,
+            designation: userData.designation,
+            division: userData.division,
+            address: userData.address,
+            phone: userData.phone,
+            fax: userData.fax,
+            mobile: userData.mobile,
+            website_address: userData.websiteaddress,
+            email: userData.email,
+            department: userData.department,
+            location: userData.location,
+            district: userData.district,
+            region: userData.region,
+
         })
-};
+            .then(response => {
+                switch (response.status) {
+                    case 400: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        break;
+                    }
+                    case 200: {
+                        alert(`Confirm your registration in your email!`);
 
 
-_registerUser = (userData) => {
+                        let userData = {
+                            name: response.data.data.username,
+                            id: response.data.data.id,
+                            email: response.data.data.email,
+                            token: response.data.token,
+                            timestamp: new Date().toString()
+                        };
 
-    var formData = new FormData();
+                        let appState = {
+                            isLoggedIn: false,
+                            user: userData
+                        };
+                        // save app state with user date in local storage
+                        localStorage["appState"] = JSON.stringify(appState);
+                        this.setState({
+                            isLoggedIn: appState.isLoggedIn,
+                            user: appState.user
+                        });
+                        // redirect user to somewhere
+                        this.setRedirect("login");
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+    };
 
-    formData.append("username", userData.username);
-    formData.append("password", userData.password);
-    formData.append("password_confirmation", userData.passwordconfirmed);
-    formData.append("first_name", userData.firstname);
-    formData.append("last_name", userData.lastname);
-    formData.append("status", userData.status);
-    formData.append("company_id", userData.companyid);
-    formData.append("staff_number", userData.staffnumber);
-    formData.append("title", userData.title);
-    formData.append("designation", userData.designation);
-    formData.append("division", userData.division);
-    formData.append("address", userData.address);
-    formData.append("phone", userData.phone);
-    formData.append("fax", userData.fax);
-    formData.append("mobile", userData.mobile);
-    formData.append("website_address", userData.websiteaddress);
-    formData.append("email", userData.email);
-    formData.append("department", userData.department);
-    formData.append("location", userData.location);
-    formData.append("district", userData.district);
-    formData.append("region", userData.region);
 
-    formData.append("password", userData.password);
-    formData.append("email", email);
-    formData.append("name", name);
-};
+    _preForgotPassword = (userEmail) => {
+        axios.post(`${env.API_URL}/preForgot`, {email: userEmail})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
 
 
+    _postForgotPassword = (userPassword) => {
+        axios.post(`${env.API_URL}/forgotpassword`, {newpassword: userPassword})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 400: {
+                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        break;
+                    }
+                    case 200: {
+                        this.handleReset();
+                        // display to user a notification showing that the password reset was sucessfull and redirect to login
+                        console.log("Password Reset!");
+                        this.renderRedirect("login");
+                        break;
+                    }
+                    default: {
+                        console.log(`Looks like there was a problem of other status code. Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
+
+
+    _getUsers = () => {
+        axios.get(`${env.API_URL}/users`)
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+    };
+
+
+    _getUserByEmail = (userEmail) => {
+        axios.get(`${env.API_URL}/users/email`, {email: userEmail})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+    };
+
+
+    _getModule = (moduleName) => {
+        axios.get(`${env.API_URL}/getmodule`, {name: moduleName})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
+
+
+    _getAllModules = () => {
+        axios.post(`${env.API_URL}/getallmodule`)
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
+
+
+    _addModule = (moduleName, moduleDescription) => {
+        axios.post(`${env.API_URL}/createmodule`, {name: moduleName, description: moduleDescription})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
+
+
+    _updateModule = (moduleName, moduleDescription) => {
+        axios.post(`${env.API_URL}/updatemodule`, {name: moduleName, description: moduleDescription})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
+
+
+    _deleteModule = (moduleName) => {
+        axios.post(`${env.API_URL}/deletemodule`, {name: moduleName})
+            .then(function (response) {
+                console.log(response);
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        alert();
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            })
+
+    };
+
+
+    componentDidMount() {
+        let state = localStorage["appState"];
+        if (state) {
+            let AppState = JSON.parse(state);
+            console.log(AppState);
+            this.setState({isLoggedIn: AppState.isLoggedIn, user: AppState.user});
+        }
+    }
+
+    render() {
+        console.log(this.state.isLoggedIn);
+        // console.log(this.state.user);
+        console.log("path name: " + this.props.location.pathname);
+
+        if (
+            !this.state.isLoggedIn &&
+            this.props.location.pathname !== "/login" &&
+            this.props.location.pathname !== "/register" &&
+            this.props.location.pathname !== "/forgot-password-email" &&
+            this.props.location.pathname !== "/activated" &&
+            this.props.location.pathname !== "/admin") {
+
+            console.log("you are not logged in and are visiting a page not login or register, go back to login page");
+            this.props.history.push("/login");
+        }
+        if (this.state.isLoggedIn && (this.props.location.pathname === "/login" || this.props.location.pathname === "/register")) {
+            console.log("you are either going to login or register but you're logged in");
+            this.props.history.push("/");
+        }
+        return (
+            <Switch>
+                <Route exact
+                       path="/"
+                       render={props => (
+                           <Home {...props} logoutUser={this._logoutUser} user={this.state.user}/>
+                       )}
+                />
+
+                <Route path="/admin"
+                       render={props => (<Admin {...props}
+                                                logoutUser={this._logoutUser}
+                                                getUsers={this._getUsers}
+                                                getUserByEmail={this._getUserByEmail}
+                                                getModule={this._getModule()}
+                                                getAllModules={this._getAllModules}
+                                                addModule={this._addModule}
+                                                updateModule={this._updateModule}
+                                                deleteModule={this._deleteModule}
+                       />)}
+                />
+
+                <Route path="/login"
+                       render={props => (<Login {...props} loginUser={this._loginUser}/>)}
+                />
+
+                <Route path="/logout"
+                       render={props => (<Logout {...props} logoutUser={this._logoutUser}/>)}
+                />
+
+                <Route path="/register"
+                       render={props => (<Register {...props} registerUser={this._registerUser}/>)}
+                />
+
+                <Route path="/activated"
+                       render={props => (<Activated {...props} activated={this._preForgotPassword}/>)}
+                />
+
+                <Route path="/forgot-password"
+                       render={props => (<ForgotPassword {...props} forgotPassword={this._postForgotPassword}/>)}
+                />
+
+                <Route path="/forgot-password-email"
+                       render={props => (<EnterEmail {...props} forgotPassword={this._preForgotPassword}/>)}
+                />
+
+                {/*<Route path="/admin" component = {Admin}/>*/}
+
+                <Route path="/reset-password" component={resetPasswordMap}/>
+                <Route component={NotFound}/>
+            </Switch>
+        )
+    }
+
+}
+
+
+const AppContainer = withRouter(props => <App {...props} />);
 
 const routingProvider = (
 
-    <Provider store={store}>
-        <Router>
-            <div>
-                <ul>
-                    {/*<li>*/}
-                    {/*    <NavLink exact activeClassName="active" to="/">*/}
-                    {/*        Home*/}
-                    {/*</NavLink>*/}
-                    {/*</li>*/}
-                    <li>
-                        <NavLink exact activeClassName="active" to="/login">
-                            Login
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink exact activeClassName="active" to="/register">
-                            Register
-                        </NavLink>
-                    </li>
-                    {/*<li>*/}
-                    {/*    <NavLink exact activeClassName="active" to="/reset-password">*/}
-                    {/*        Reset Password*/}
-                    {/*</NavLink>*/}
-                    {/*</li>*/}
-                    <li>
-                        <NavLink exact activeClassName="active" to="/admin">
-                            Admin
-                        </NavLink>
-                    </li>
-                </ul>
-                <Switch>
-                    <Route exact path="/" component={App} />
-                    <Route path="/admin" component={Admin}/>
-                    <Route path="/login" component={loginMap} />
-                    <Route path="/register" component={registerMap} />
-                    <Route path="/reset-password" component={resetPasswordMap} />
-                    <Route path="/forgot-password" component={ForgotPassword}/>
-                    <Route path="/forgot-password-email" component={EnterEmail} />
-                    <Route path="/activated" component={Activated}/>
-                    <Route component={NotFound} />
-                </Switch>
-            </div>
-        </Router>
 
-    </Provider>
+    <Router>
+        <div>
+            {/*<ul>*/}
+            {/*    <li>*/}
+            {/*        <NavLink exact activeClassName="active" to="/login">*/}
+            {/*            Login*/}
+            {/*        </NavLink>*/}
+            {/*    </li>*/}
+            {/*    <li>*/}
+            {/*        <NavLink exact activeClassName="active" to="/register">*/}
+            {/*            Register*/}
+            {/*        </NavLink>*/}
+            {/*    </li>*/}
+            {/*</ul>*/}
+            <AppContainer/>
+        </div>
+    </Router>
 
 );
 
