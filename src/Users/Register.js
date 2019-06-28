@@ -150,7 +150,7 @@ export default class Register extends Component {
             // if errorTexts.status = false,  make post request to api and submit user details
             if (errorTexts.error === false) {
                 this.props.registerUser(this.state);
-                this.handleClearForm()
+                // this.handleClearForm()
             }
             else{
                 //Display errors
@@ -220,8 +220,8 @@ export default class Register extends Component {
                                                onChange={this.handleInputChange} required/>
                                         <div>
                                             <br/>
-                                            <a href="#profile" className="btn btn-outline-success pull-right"
-                                               data-toggle="tab">Next</a>
+                                            {/*<a href="#profile" className="btn btn-outline-success pull-right"*/}
+                                            {/*   data-toggle="tab">Next</a>*/}
                                         </div>
                                     </div>
 
@@ -280,8 +280,8 @@ export default class Register extends Component {
                                                onChange={this.handleInputChange} required/>
                                         <div>
                                             <br/>
-                                            <a href="#contact" className="btn btn-outline-success pull-right"
-                                               data-toggle="tab">Next</a>
+                                            {/*<a href="#contact" className="btn btn-outline-success pull-right"*/}
+                                            {/*   data-toggle="tab">Next</a>*/}
                                         </div>
                                     </div>
                                 </div>

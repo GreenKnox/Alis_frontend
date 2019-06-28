@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios/index';
 import NotFound from '../../NotFound'
 import * as env from '../../config'
+import SingleInput from '../../components/SingleInput'
 import {Redirect} from 'react-router-dom'
 import queryString from "query-string";
 
@@ -26,8 +27,8 @@ export default class ForgotPassword extends Component {
         this.state = {
             id: values._uid,
             token: values._tk_n,
-            newPassword: '',
-            confirmNewPassword: '',
+            input_1: '',
+            input_2: '',
             cond: false
         }
 
@@ -40,14 +41,14 @@ export default class ForgotPassword extends Component {
 
         this.setState({
             [name]: value
-        });
+        })
     };
 
 
     handleReset = () => {
         this.setState({
-            newPassword: '',
-            confirmNewPassword: ''
+            input_1: '',
+            input_2: ''
         });
     };
 
@@ -59,7 +60,7 @@ export default class ForgotPassword extends Component {
 
     verifyToken = async () => {
         try {
-            const response = await axios.post(`${env.API_URL}/checkTokens `, {
+            const response = await axios.get(`${env.API_URL}/checktoken`, {
                 params: {
                     _uid: this.state.id,
                     _tk_n: this.state.token,
@@ -104,8 +105,8 @@ export default class ForgotPassword extends Component {
 
     sendRequest = (event) => {
         event.preventDefault();
-        if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
-            this.props.forgotPassword(this.state.newPassword);
+        if (this.state.input_1.trim() === this.state.input_2.trim()) {
+            this.props.forgotPassword(this.state.input_1, this.state.id, this.state.token);
             this.handleReset()
         } else {
             console.log('Passwords do not match');
@@ -139,19 +140,24 @@ export default class ForgotPassword extends Component {
                                         <h4 style={this.style2}>Forgot Password</h4>
                                     </header>
                                     <div>
-                                        <label htmlFor="Password">New Passsword</label>
-                                        <input type="text" name="newpassword" className="form-control"
-                                               placeholder="************ "
-                                               value={this.state.newPassword}
-                                               onChange={this.handleInputChange} required autoFocus/>
+                                        <label htmlFor="Input_1">New Passsword</label>
+                                        <SingleInput
+                                            inputType={'password'}
+                                            name={'input_1'}
+                                            controlFunc={this.handleInputChange}
+                                            content={this.state.input_1}
+                                            placeholder={'********'}/>
+
                                     </div>
                                     <br/>
                                     <div>
-                                        <label htmlFor="Passsword">Confirm Password</label>
-                                        <input type="password" name="confirmnewpassword" className="form-control"
-                                               placeholder="*************"
-                                               value={this.state.confirmNewPassword}
-                                               onChange={this.handleInputChange} required/>
+                                        <label htmlFor="Input_2">Confirm Password</label>
+                                        <SingleInput
+                                            inputType={'password'}
+                                            name={'input_2'}
+                                            controlFunc={this.handleInputChange}
+                                            content={this.state.input_2}
+                                            placeholder={'********'}/>
                                     </div>
                                     <br/>
 

@@ -6,21 +6,31 @@ import {Link, Redirect} from 'react-router-dom'
 import '../css/admin.css';
 
 
+const styles = {
+    hand: {
+        cursor: 'pointer',
+        color: '#636e72'
+    },
+};
+
 export default class Admin extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            token: '',
+            token: "",
+            isLoggedIn: "",
+            user: "",
+
+
             columnNames: ["First Name", "Last Name", "Email", "Rank", "Age"],
             users: [
                 ["Kwame", "Asare", "asarebernard98@gmail.com", "Manager", "20"],
                 ["Kwame", "Asare", "asarebernard98@gmail.com", "Manager", "20"],
                 ["Kwame", "Asare", "asarebernard98@gmail.com", "Manager", "20"]
             ],
-            isLoggedIn: "",
-            user: ""
+
 
         }
     }
@@ -49,6 +59,10 @@ export default class Admin extends Component {
 
     componentDidMount() {
 
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+
         let state = localStorage["appState"];
         if (state) {
             let AppState = JSON.parse(state);
@@ -56,18 +70,14 @@ export default class Admin extends Component {
             this.setState({isLoggedIn: AppState.isLoggedIn, user: AppState.user});
         }
 
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
-        })
-
+        console.log(this.state.user)
     }
 
     render() {
 
-        const isLoggedIn = this.state.isLoggedIn;
         let button;
 
-        if (!isLoggedIn) {
+        if (!this.state.isLoggedIn) {
             button = <>
                 <li className="nav-item">
                     <Link to={'/login'}
@@ -81,8 +91,10 @@ export default class Admin extends Component {
 
         } else {
             button = <li className="nav-item">
-                <Redirect to={'/logout'}
-                          className="nav-link"> Logout</Redirect>
+                <a className="" style={styles.hand} onClick={this.props.logoutUser} href='#'>Logout
+                </a>
+                {/*<Link to={'/logout'}*/}
+                {/*          className="nav-link"> Logout</Link>*/}
             </li>
         }
 

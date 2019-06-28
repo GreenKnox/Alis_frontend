@@ -44,10 +44,10 @@ export default class Home extends Component {
             <div>
                 Home
 
-                <div>
-                    <button className="btn btn-outline-success" onClick={this.props.logoutUser}>Log Out
-                    </button>
-                </div>
+                {/*<div>*/}
+                {/*    <button className="btn btn-outline-success" onClick={this.props.logoutUser}>Log Out*/}
+                {/*    </button>*/}
+                {/*</div>*/}
             </div>
 
         )

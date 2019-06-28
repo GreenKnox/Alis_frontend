@@ -8,7 +8,6 @@ import Home from './Home/Home';
 
 import Admin from './Admin/Admin'
 import Login from './Users/Login'
-import Logout from './Users/Logout'
 import NotFound from './NotFound';
 import Register from './Users/Register'
 import Activated from './Users/Activated'
@@ -30,7 +29,7 @@ class App extends React.Component {
     }
 
     _renderRedirect = (path) => {
-        return <Redirect to={`/${path}`}/>
+        return <Redirect to={`${path}`}/>
     };
 
 
@@ -63,7 +62,6 @@ class App extends React.Component {
                         break;
                     }
                     case 200: {
-                        alert("Login Successful!");
                         let userData = {
                             name: response.data.data.username,
                             id: response.data.data.id,
@@ -77,13 +75,10 @@ class App extends React.Component {
                         };
                         // save app state with user date in local storage
                         localStorage["appState"] = JSON.stringify(appState);
-                        this.setState({
-                            isLoggedIn: appState.isLoggedIn,
-                            user: appState.user
-                        });
+                        this.setState(appState);
                         // login successful, display notification for some time and redirect to home page
-                        this._renderRedirect('/');
-
+                        this._renderRedirect('/admin');
+                        alert("Login Successful!");
                         break;
                     }
                     default: {
@@ -146,9 +141,10 @@ class App extends React.Component {
                     }
                     case 200: {
                         alert("Logout Successful!");
+                        // save app state with user date in local storage
                         localStorage["appState"] = JSON.stringify(appState);
-                        localStorage.removeItem('appState');
                         this.setState(appState);
+                        this._renderRedirect('/login');
                         break;
                     }
                     default: {
@@ -175,10 +171,6 @@ class App extends React.Component {
                 }
                 console.log(error.config);
             });
-
-        localStorage["appState"] = JSON.stringify(appState);
-        this.setState(appState);
-
     };
 
 
@@ -313,8 +305,14 @@ class App extends React.Component {
     };
 
 
-    _postForgotPassword = (userPassword) => {
-        axios.post(`${env.API_URL}/forgotpassword`, {newpassword: userPassword})
+    _postForgotPassword = (userPassword, userId, userToken) => {
+        axios.post(`${env.API_URL}/postForgot`, {
+                password: userPassword,
+                password_confirmation: userPassword,
+                _uid: userId,
+                _tk_n: userToken
+            }
+        )
             .then(function (response) {
                 console.log(response);
                 switch (response.status) {
@@ -686,20 +684,27 @@ class App extends React.Component {
         // console.log(this.state.user);
         console.log("path name: " + this.props.location.pathname);
 
+        // if(!this.state.isLoggedIn && this.props.location.pathname === "/admin"){
+        //     alert("login first")
+        //     this.props.history.push("/login");
+        // }
         if (
             !this.state.isLoggedIn &&
+            this.props.location.pathname !== "/" &&
             this.props.location.pathname !== "/login" &&
             this.props.location.pathname !== "/register" &&
             this.props.location.pathname !== "/forgot-password-email" &&
             this.props.location.pathname !== "/activated" &&
-            this.props.location.pathname !== "/admin") {
+            this.props.location.pathname !== "/forgot-password"
+        ) {
 
+            // alert("login first")
             console.log("you are not logged in and are visiting a page not login or register, go back to login page");
             this.props.history.push("/login");
         }
         if (this.state.isLoggedIn && (this.props.location.pathname === "/login" || this.props.location.pathname === "/register")) {
             console.log("you are either going to login or register but you're logged in");
-            this.props.history.push("/");
+            this.props.history.push("/admin");
         }
         return (
             <Switch>
@@ -710,26 +715,10 @@ class App extends React.Component {
                        )}
                 />
 
-                <Route path="/admin"
-                       render={props => (<Admin {...props}
-                                                logoutUser={this._logoutUser}
-                                                getUsers={this._getUsers}
-                                                getUserByEmail={this._getUserByEmail}
-                                                getModule={this._getModule()}
-                                                getAllModules={this._getAllModules}
-                                                addModule={this._addModule}
-                                                updateModule={this._updateModule}
-                                                deleteModule={this._deleteModule}
-                       />)}
-                />
-
                 <Route path="/login"
                        render={props => (<Login {...props} loginUser={this._loginUser}/>)}
                 />
 
-                <Route path="/logout"
-                       render={props => (<Logout {...props} logoutUser={this._logoutUser}/>)}
-                />
 
                 <Route path="/register"
                        render={props => (<Register {...props} registerUser={this._registerUser}/>)}
@@ -747,7 +736,22 @@ class App extends React.Component {
                        render={props => (<EnterEmail {...props} forgotPassword={this._preForgotPassword}/>)}
                 />
 
-                {/*<Route path="/admin" component = {Admin}/>*/}
+
+                <Route path="/admin"
+                       render={props => (
+                           <Admin {...props}
+                                  currentUser={this.state.user}
+                                  isLoggedIn={this.state.isLoggedIn}
+                                  logoutUser={this._logoutUser}
+                               // getUsers={this._getUsers}
+                               // getUserByEmail={this._getUserByEmail}
+                               // getModule={this._getModule()}
+                               // getAllModules={this._getAllModules}
+                               // addModule={this._addModule}
+                               // updateModule={this._updateModule}
+                               // deleteModule={this._deleteModule}
+                           />)}
+                />
 
                 <Route path="/reset-password" component={resetPasswordMap}/>
                 <Route component={NotFound}/>
