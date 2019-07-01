@@ -5,9 +5,9 @@ import {BrowserRouter as Router, Redirect, Route, Switch, withRouter} from 'reac
 import './css/index.css';
 
 import Home from './Home/Home';
-
 import Admin from './Admin/Admin'
 import Login from './Users/Login'
+import User from './Users/User'
 import NotFound from './NotFound';
 import Register from './Users/Register'
 import Activated from './Users/Activated'
@@ -77,7 +77,7 @@ class App extends React.Component {
                         localStorage["appState"] = JSON.stringify(appState);
                         this.setState(appState);
                         // login successful, display notification for some time and redirect to home page
-                        this._renderRedirect('/admin');
+                        this._renderRedirect('/');
                         alert("Login Successful!");
                         break;
                     }
@@ -370,7 +370,17 @@ class App extends React.Component {
                     }
                     case 200: {
                         // then display notification to user that email verification has been sent to the mail for password reset
-                        alert();
+                        let allUserData = response.data.data;
+                        var firstNames = [], lastNames = [], emails = [], phoneNumbers = [];
+
+                        for (let i = 0; i < allUserData.length; i++) {
+                            firstNames.push(response.data.data[i].first_name);
+                            lastNames.push(response.data.data[i].last_name);
+                            emails.push(response.data.data[i].email);
+                            phoneNumbers.push(response.data.data[i].phone)
+                        }
+
+
                         break;
                     }
                     default: {
@@ -684,10 +694,7 @@ class App extends React.Component {
         // console.log(this.state.user);
         console.log("path name: " + this.props.location.pathname);
 
-        // if(!this.state.isLoggedIn && this.props.location.pathname === "/admin"){
-        //     alert("login first")
-        //     this.props.history.push("/login");
-        // }
+
         if (
             !this.state.isLoggedIn &&
             this.props.location.pathname !== "/" &&
@@ -697,26 +704,26 @@ class App extends React.Component {
             this.props.location.pathname !== "/activated" &&
             this.props.location.pathname !== "/forgot-password"
         ) {
-
             // alert("login first")
             console.log("you are not logged in and are visiting a page not login or register, go back to login page");
             this.props.history.push("/login");
         }
         if (this.state.isLoggedIn && (this.props.location.pathname === "/login" || this.props.location.pathname === "/register")) {
             console.log("you are either going to login or register but you're logged in");
-            this.props.history.push("/admin");
+            this.props.history.push("/");
         }
         return (
             <Switch>
-                <Route exact
-                       path="/"
-                       render={props => (
-                           <Home {...props} logoutUser={this._logoutUser} user={this.state.user}/>
-                       )}
+                <Route exact path="/"
+                       render={props => (<Home {...props} user={this.state.user}/>)}
                 />
 
                 <Route path="/login"
                        render={props => (<Login {...props} loginUser={this._loginUser}/>)}
+                />
+
+                <Route path="/logout"
+                       render={props => (<Login {...props} logoutUser={this._logoutUser}/>)}
                 />
 
 
@@ -740,8 +747,6 @@ class App extends React.Component {
                 <Route path="/admin"
                        render={props => (
                            <Admin {...props}
-                                  currentUser={this.state.user}
-                                  isLoggedIn={this.state.isLoggedIn}
                                   logoutUser={this._logoutUser}
                                // getUsers={this._getUsers}
                                // getUserByEmail={this._getUserByEmail}
@@ -753,7 +758,13 @@ class App extends React.Component {
                            />)}
                 />
 
+                <Route path="/user"
+                       render={props => (<User {...props}/>)}
+                />
+
+
                 <Route path="/reset-password" component={resetPasswordMap}/>
+
                 <Route component={NotFound}/>
             </Switch>
         )
@@ -765,7 +776,6 @@ class App extends React.Component {
 const AppContainer = withRouter(props => <App {...props} />);
 
 const routingProvider = (
-
 
     <Router>
         <div>

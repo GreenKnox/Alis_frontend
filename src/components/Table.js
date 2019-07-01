@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom'
+
 
 export default class Table extends Component {
 
@@ -6,7 +8,6 @@ export default class Table extends Component {
         super(props);
 
     }
-
 
     render() {
         return (
@@ -26,16 +27,18 @@ export default class Table extends Component {
                     return (
                         <>
                             <tr>
-                                {/*<Link to={"/login"}>*/}
                                 <th scope="row">{index + 1}</th>
                                 {user.map((detail) => {
+
+                                    // console.log(detail.email)
+                                    // {let path = detail.email ? JSON.parse(localStorage["appState"]).user.email : ""}
+
                                     return (
                                         <>
-                                            <td scope="col">{detail}</td>
+                                            <td scope="col"><Link to={`user?email=${detail[2]}`}>{detail}</Link></td>
                                         </>
                                     )
                                 })}
-                                {/*</Link>*/}
                             </tr>
                         </>
                     )

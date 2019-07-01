@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import {Link, Redirect} from 'react-router-dom'
+import Sidebar from '../components/Sidebar'
+import '../css/admin.css';
+import $ from "jquery";
 
 
 const styles = {
@@ -10,6 +13,9 @@ const styles = {
     style2: {
         fontFamily: 'Lucida Console',
         color: '#636e72'
+    },
+    showColor: {
+        'color': '#007bff',
     }
 };
 
@@ -37,15 +43,8 @@ export default class Login extends Component {
     };
 
 
-    handleClearForm = () => {
-        this.setState({
-            email: '',
-            password: ''
-        })
-    };
-
     renderRedirect = (path) => {
-        return <Redirect to={`/${path}`}/>
+        return <Redirect to={`${path}`}/>
     };
 
 
@@ -56,8 +55,15 @@ export default class Login extends Component {
         } else {
             console.log('No input accepted');
         }
-        this.handleClearForm()
     };
+
+    componentDidMount() {
+
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
+        });
+    }
 
 
 
@@ -65,61 +71,116 @@ export default class Login extends Component {
 
     render() {
         return (
-            <div>
+            <div className="wrapper">
 
-                <div className="col-lg-12 text-center ">
-                    <header>
-                        <h1 style={styles.style1}>Adwenan Land Information System</h1>
-                    </header>
-                </div>
+                {/*sidebar*/}
+                <Sidebar/>
 
+                {/*main content*/}
+                <div id="content">
+                    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                        <div className="container-fluid">
 
-                <div className="login_wrapper col-md-4 ml-auto mr-auto">
-                    <section className="login_content ">
-                        <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
-                            <form onSubmit={this.validateUser}>
-                                <header>
-                                    <h4 style={this.style2}>User Login Form</h4>
-                                </header>
+                            <button type="button" id="sidebarCollapse" className="btn">
+                                <i className="fas fa-arrow-left" id="my-arrow"></i>
+                                <span></span>
+                            </button>
+                            <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
+                                    data-toggle="collapse" data-target="#navbarSupportedContent"
+                                    aria-controls="navbarSupportedContent" aria-expanded="false"
+                                    aria-label="Toggle navigation">
+                                <i className="fas fa-align-justify"></i>
+                            </button>
 
-                                <div>
-                                    <label htmlFor="Username">Username</label>
-                                    <input type="text" name="email" className="form-control"
-                                           placeholder="example@gh.gov"
-                                           value={this.state.email}
-                                           onChange={this.handleInputChange} required autoFocus/>
-                                </div>
-                                <br />
-                                <div>
-                                    <label htmlFor="Passsword">Password</label>
-                                    <input type="password" name="password" className="form-control"
-                                           placeholder="*************"
-                                           value={this.state.password}
-                                           onChange={this.handleInputChange} required/>
-                                </div>
-                                <br />
-                                <div>
-                                    <div>
-                                        <button className="btn btn-outline-success" type="submit" value="Submit" >Login</button>
-                                    </div>
-                                </div>
+                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
 
-                                <div className="clearfix"></div>
+                                <h3>Login</h3>
 
-                                <div className="separator">
-                                    <div className="change_link">New to this site? <Link to={'/register'}
-                                                                                         className="nav-link"> Create
-                                        Account </Link></div>
-                                    <div className="change_link">Forgot password? <Link to={'/forgot-password-email'}
-                                                                                        className="nav-link"> Reset
-                                        Password </Link></div>
-                                    <div className="clearfix"></div>
-                                    <br />
-                                </div>
-                            </form>
+                                <ul className="nav navbar-nav ml-auto">
+
+                                    <li className="nav-item">
+                                        <Link to={'/'}
+                                              className="nav-link dropdown-item "> Home </Link>
+
+                                    </li>
+                                    <li className="nav-item">
+                                        {/*<a className="nav-link" style={styles.hand} onClick={this.renderRedirect('')}>Home</a>*/}
+                                        <div className="dropdown show">
+                                            <button className="btn" role="button"
+                                                    id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false"><i className="fas fa-user"></i>
+                                            </button>
+
+                                            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                <Link to={'/register'}
+                                                      className="nav-link dropdown-item "> Register </Link>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    </section>
+                    </nav>
+
+                    <div className="container">
+
+
+                        <div className="login_wrapper col-md-4 ml-auto mr-auto">
+                            <section className="login_content ">
+                                <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
+                                    <form onSubmit={this.validateUser}>
+                                        <header>
+                                            <h4 style={this.style2}>Login</h4>
+                                        </header>
+                                        <br/>
+
+                                        <div>
+                                            <label htmlFor="Email">Email</label>
+                                            <input type="text" name="email" className="form-control"
+                                                   placeholder="example@gh.gov"
+                                                   value={this.state.email}
+                                                   onChange={this.handleInputChange} required autoFocus/>
+                                        </div>
+                                        <br/>
+                                        <div>
+                                            <label htmlFor="Passsword">Password</label>
+                                            <input type="password" name="password" className="form-control"
+                                                   placeholder="*************"
+                                                   value={this.state.password}
+                                                   onChange={this.handleInputChange} required/>
+                                        </div>
+                                        <br/>
+                                        <div>
+                                            <div>
+                                                <button className="btn btn-outline-success" type="submit"
+                                                        value="Submit">Login
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="clearfix"></div>
+                                        <br/>
+
+                                        <div className="separator">
+                                            <div className="change_link">New to this site? <Link to={'/register'}
+                                                                                                 style={styles.showColor}> Create
+                                                Account </Link></div>
+                                            <div className="change_link">Forgot password? <Link
+                                                to={'/forgot-password-email'}
+                                                style={styles.showColor}> Reset
+                                                Password </Link></div>
+                                            <div className="clearfix"></div>
+                                            <br/>
+                                        </div>
+                                    </form>
+                                </div>
+                            </section>
+                        </div>
+
+
+                    </div>
                 </div>
+
             </div>
         )
     }
