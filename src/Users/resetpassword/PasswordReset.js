@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import SingleInput from './SingleInput'
-import { Redirect } from 'react-router-dom'
+import React, {Component} from 'react';
+import axios from 'axios/index';
+import * as env from '../../config'
+import {Redirect} from 'react-router-dom'
 
 const styles = {
     style1: {
@@ -14,18 +14,17 @@ const styles = {
     }
 };
 
-const API_URL = 'http://127.0.0.1:8000/api/passwordreset';
-
-
-export default class EnterEmail extends Component {
+export default class passwordReset extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             message: '',
             token: '',
-            email: '',
+            oldPassword: '',
+            newPassword: '',
+            confirmNewPassword: '',
             redirect: ''
         }
 
@@ -39,30 +38,26 @@ export default class EnterEmail extends Component {
         this.setState({
             [name]: value
         });
-    }
+    };
 
     handleReset = () => {
         this.setState({
-            email: ''
+            oldPassword: '',
+            newPassword: '',
+            confirmNewPassword: ''
         });
     };
 
-    setRedirect = () => {
-        this.setState({
-            redirect: true
-        })
-    }
-    renderRedirect = () => {
-        if (this.state.redirect) {
-            return <Redirect to='/' />
-        }
-    }
+    renderRedirect = (path) => {
+        return <Redirect to={`/${path}`}/>
+    };
 
     sendRequest = (event) => {
-        event.preventDefault()
-        if (this.state.email.trim()) {
-            axios.post(API_URL, {
-                email: this.state.email
+        event.preventDefault();
+        if (this.state.newPassword.trim() === this.state.confirmNewPassword.trim()) {
+            axios.post(`${env.API_URL}/passwordreset`, {
+                oldpassword: this.state.oldPassword,
+                newpassword: this.state.newPassword
             })
                 .then(function (response) {
                     console.log(response);
@@ -73,19 +68,15 @@ export default class EnterEmail extends Component {
                             break;
                         }
                         case 200: {
-                            this.setState({
-                                message: response.data.message,
-                                token: response.data.token
-                            })
-                            this.props.addMessage(this.message);
-                            this.props.addToken(this.token);
-                            this.handleReset()
-                            this.setRedirect()
+                            // password setting successful, display notification for some time and redirect to login page
+                            this.renderRedirect('login');
                             break;
                         }
                         default: {
-                            //statements;
+                            console.log(`Looks like there was a problem of another status code. Status Code: ${response.status}`);
+                            console.log(`Error: ${response.message}`);
                             break;
+
                         }
                     }
                 })
@@ -111,10 +102,7 @@ export default class EnterEmail extends Component {
         } else {
             console.log('No input accepted');
         }
-    }
-
-
-
+    };
 
 
 
@@ -135,17 +123,34 @@ export default class EnterEmail extends Component {
                         <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
                             <form onSubmit={this.sendRequest}>
                                 <header>
-                                    <h4 style={this.style2}>Enter Your Email</h4>
+                                    <h4 style={this.style2}>Reset Password</h4>
                                 </header>
                                 <div>
-                                    <label htmlFor="Password">Email</label>
-                                    <SingleInput
-                                        inputType={'email'}
-                                        name={'email'}
-                                        controlFunc={this.handleInputChange}
-                                        content={this.state.email}
-                                        placeholder={'Type email'} />
+                                    <label htmlFor="Password">Old Passsword</label>
+                                    <input type="text" name="oldpassword" className="form-control"
+                                        placeholder="************ "
+                                        value={this.state.oldPassword} 
+                                        onChange={this.handleInputChange} required autoFocus />
                                 </div>
+                                <br />
+
+                                <div>
+                                    <label htmlFor="Password">New Passsword</label>
+                                    <input type="text" name="newpassword" className="form-control"
+                                        placeholder="************ "
+                                        value={this.state.newPassword} 
+                                        onChange={this.handleInputChange} required autoFocus />
+                                </div>
+                                <br />
+                                <div>
+                                    <label htmlFor="Passsword">Confirm Password</label>
+                                    <input type="password" name="confirmnewpassword" className="form-control"
+                                        placeholder="*************"
+                                        value={this.state.confirmNewPassword} 
+                                        onChange={this.handleInputChange} required />
+                                </div>
+                                <br />
+                                
                                 <div>
                                     <button type="submit" className="btn btn-outline-success" value="Submit">Submit</button>
                                 </div>
@@ -157,21 +162,6 @@ export default class EnterEmail extends Component {
         )
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

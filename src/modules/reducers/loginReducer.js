@@ -9,7 +9,7 @@ const Types = {
 const initialState = {
     message: '',
     token: '',
-}   
+};
 
 
 
@@ -18,16 +18,16 @@ const loginReducer = (state = initialState, action) => {
         case Types.ADD_MESSAGE:
             return Object.assign({}, state, {
                 message: state.message.concat(action.payload)
-            })
-            break
+            });
+            break;
         case Types.ADD_TOKEN:
             return Object.assign({}, state, {
                 token: state.token.concat(action.payload)
-            })
-            break 
+            });
+            break;
         default:
             return state;
     }
-}
+};
 
 export default loginReducer
