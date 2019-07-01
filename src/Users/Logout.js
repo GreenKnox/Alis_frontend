@@ -16,14 +16,9 @@ export default class Logout extends Component {
 
 
     renderRedirect = (path) => {
-        return <Redirect to={`/${path}`}/>
+        return <Redirect to={`${path}`}/>
     };
 
-
-    handleRouting = () => {
-        this.props.logoutUser();
-        this.renderRedirect("")
-    };
 
     componentDidMount() {
 
@@ -33,19 +28,10 @@ export default class Logout extends Component {
             console.log(AppState);
             this.setState({isLoggedIn: AppState.isLoggedIn, user: AppState.user});
         }
+        this.props.logoutUser();
+        this.renderRedirect("/login")
 
     }
-
-    render() {
-
-        return (
-            <>
-                {this.handleRouting()}
-            </>
-        )
-    }
-
-
 }
 
 

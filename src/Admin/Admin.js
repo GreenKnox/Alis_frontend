@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import $ from 'jquery';
-// import * as env from '../config'
+import axios from 'axios/index';
 import Table from '../components/Table'
-import {Link, Redirect} from 'react-router-dom'
+import Sidebar from '../components/Sidebar'
+import {Redirect} from 'react-router-dom'
 import '../css/admin.css';
+import * as env from "../config";
 
 
 const styles = {
@@ -12,6 +14,10 @@ const styles = {
         color: '#636e72'
     },
 };
+
+var allUsers = [];
+var tempUser = [];
+var tempUsers = [];
 
 export default class Admin extends Component {
 
@@ -22,18 +28,16 @@ export default class Admin extends Component {
             token: "",
             isLoggedIn: "",
             user: "",
-
-
-            columnNames: ["First Name", "Last Name", "Email", "Rank", "Age"],
+            columnNames: ["First Name", "Last Name", "Email", "Phone"],
             users: [
-                ["Kwame", "Asare", "asarebernard98@gmail.com", "Manager", "20"],
-                ["Kwame", "Asare", "asarebernard98@gmail.com", "Manager", "20"],
-                ["Kwame", "Asare", "asarebernard98@gmail.com", "Manager", "20"]
-            ],
-
-
+                [],
+                [],
+                [],
+                []
+            ]
         }
     }
+
 
 
     handleInputChange = (event) => {
@@ -61,6 +65,7 @@ export default class Admin extends Component {
 
         $('#sidebarCollapse').on('click', function () {
             $('#sidebar').toggleClass('active');
+            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
         });
 
         let state = localStorage["appState"];
@@ -70,125 +75,74 @@ export default class Admin extends Component {
             this.setState({isLoggedIn: AppState.isLoggedIn, user: AppState.user});
         }
 
-        console.log(this.state.user)
+        axios.get(`${env.API_URL}/users`)
+            .then(function (response) {
+                switch (response.status) {
+                    case 404: {
+                        console.log(`User not found Status Code: ${response.status}`);
+                        console.log(`Error: ${response.message}`);
+                        // then display notification to user that the email does not exist in the database
+                        break;
+                    }
+                    case 200: {
+                        // then display notification to user that email verification has been sent to the mail for password reset
+                        allUsers = response.data.data;
+                        for (let i = 0; i < allUsers.length; i++) {
+                            tempUser.push(allUsers[i]["first_name"]);
+                            tempUser.push(allUsers[i]["last_name"]);
+                            tempUser.push(allUsers[i]["email"]);
+                            tempUser.push(allUsers[i]["phone"]);
+                            tempUsers.push(tempUser);
+                            tempUser = []
+                        }
+                        console.log(tempUsers);
+
+                        break;
+                    }
+                    default: {
+                        //statements;
+                        //todo: other error codes
+                        break;
+                    }
+                }
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error: ', error.message);
+                }
+                console.log(error.config);
+            })
     }
 
     render() {
-
-        let button;
-
-        if (!this.state.isLoggedIn) {
-            button = <>
-                <li className="nav-item">
-                    <Link to={'/login'}
-                          className="nav-link"> Login</Link>
-                </li>
-                <li className="nav-item">
-                    <Link to={'/register'}
-                          className="nav-link"> Register</Link>
-                </li>
-            </>
-
-        } else {
-            button = <li className="nav-item">
-                <a className="" style={styles.hand} onClick={this.props.logoutUser} href='#'>Logout
-                </a>
-                {/*<Link to={'/logout'}*/}
-                {/*          className="nav-link"> Logout</Link>*/}
-            </li>
-        }
 
         return (
 
             <div className="wrapper">
 
-                <nav id="sidebar">
-                    <div className="sidebar-header">
-                        <h3>Adwenan</h3>
-                        <strong>A</strong>
-                    </div>
+                {/*sidebar*/}
+                <Sidebar/>
 
-                    <ul className="list-unstyled components">
-                        <li className="active">
-                            <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
-                               className="dropdown-toggle">
-                                <i className="fas fa-home"></i>
-                                Home
-                            </a>
-                            <ul className="collapse list-unstyled" id="homeSubmenu">
-                                <li>
-                                    <a href="#">Home 1</a>
-                                </li>
-                                <li>
-                                    <a href="#">Home 2</a>
-                                </li>
-                                <li>
-                                    <a href="#">Home 3</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i className="fas fa-briefcase"></i>
-                                Modules & Permissions
-                            </a>
-                            <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
-                               className="dropdown-toggle">
-                                <i className="fas fa-copy"></i>
-                                Pages
-                            </a>
-                            <ul className="collapse list-unstyled" id="pageSubmenu">
-                                <li>
-                                    <a href="#">Page 1</a>
-                                </li>
-                                <li>
-                                    <a href="#">Page 2</a>
-                                </li>
-                                <li>
-                                    <a href="#">Page 3</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i className="fas fa-image"></i>
-                                User Management
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i className="fas fa-question"></i>
-                                FAQ
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i className="fas fa-paper-plane"></i>
-                                Contact
-                            </a>
-                        </li>
-                    </ul>
-
-                    <ul className="list-unstyled CTAs">
-                        <li>
-                            <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" className="download">Download
-                                source</a>
-                        </li>
-                        <li>
-                            <a href="https://bootstrapious.com/p/bootstrap-sidebar" className="article">Back to
-                                article</a>
-                        </li>
-                    </ul>
-                </nav>
-
-
+                {/*main content*/}
                 <div id="content">
 
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">
 
-                            <button type="button" id="sidebarCollapse" className="btn btn-info">
-                                <i className="fas fa-align-left"></i>
+                            <button type="button" id="sidebarCollapse" className="btn">
+                                <i className="fas fa-arrow-left" id="my-arrow"></i>
                                 <span></span>
                             </button>
                             <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
@@ -199,17 +153,30 @@ export default class Admin extends Component {
                             </button>
 
                             <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                                <h3>Admin</h3>
                                 <ul className="nav navbar-nav ml-auto">
 
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#">Home</a>
 
-                                    <li className="nav-item">
-                                        <Link to={'/'}
-                                              className="nav-link">Home </Link>
                                     </li>
-                                    {button}
                                     <li className="nav-item">
-                                        <Link to={'/info'}
-                                              className="nav-link">Info </Link>
+                                        <a className="nav-link" href="#">Help</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        {/*<a className="nav-link" style={styles.hand} onClick={this.renderRedirect('')}>Home</a>*/}
+                                        <div className="dropdown show">
+                                            <button class="btn" role="button"
+                                                    id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false"><i className="fas fa-user"></i>
+                                            </button>
+
+                                            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                <a className="dropdown-item" href="#"
+                                                   onClick={this.props.logoutUser}>Logout</a>
+                                                <a className="dropdown-item" href="#">Profile</a>
+                                            </div>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -400,23 +367,25 @@ export default class Admin extends Component {
 
                         </div>
 
+
+                        <div className="line"></div>
+
+
+                        <h2>Users</h2>
+                        <Table columnNames={this.state.columnNames} users={tempUsers}/>
+
+                        <div className="line"></div>
+
+
+                        <h3>Lorem Ipsum Dolor</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+
                     </div>
-
-                    <div className="line"></div>
-
-
-                    <h2>Users</h2>
-                    <Table columnNames={this.state.columnNames} users={this.state.users}/>
-
-                    <div className="line"></div>
-
-
-                    <h3>Lorem Ipsum Dolor</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                 </div>
 
             </div>
