@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Link, Redirect} from 'react-router-dom'
-import Sidebar from '../components/Sidebar'
 import '../css/admin.css';
 import $ from "jquery";
 
@@ -39,7 +38,15 @@ export default class Login extends Component {
 
         this.setState({
             [name]: value
-        })
+        });
+
+        if (!this.validateEmail(this.state.email)) {
+            $('#email').removeClass("is-valid");
+            $('#email').addClass("is-invalid")
+        } else {
+            $('#email').removeClass("is-invalid");
+            $('#email').addClass("is-valid")
+        }
     };
 
 
@@ -51,10 +58,28 @@ export default class Login extends Component {
     validateUser = (event) => {
         event.preventDefault();
         if (this.state.email.trim() && this.state.password.trim()) {
-            this.props.loginUser(this.state.email, this.state.password);
+
+            if (this.validateEmail(this.state.email.trim())) {
+                this.props.loginUser(this.state.email, this.state.password);
+            } else {
+                $('#email').addClass("is-invalid")
+            }
         } else {
-            console.log('No input accepted');
+            $("#errorBlockText")
+                .html(
+                    `<strong>Error! </strong> Empty Input Provided.`
+                );
+            $("#errorBlock").show()
         }
+    };
+
+    validateEmail = (email) => {
+        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
+    hideErrorNoti = () => {
+        $('#errorBlock').hide()
     };
 
     componentDidMount() {
@@ -63,6 +88,8 @@ export default class Login extends Component {
             $('#sidebar').toggleClass('active');
             $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
         });
+
+        $('#errorBlock').hide()
     }
 
 
@@ -74,17 +101,17 @@ export default class Login extends Component {
             <div className="wrapper">
 
                 {/*sidebar*/}
-                <Sidebar/>
+                {/*<Sidebar/>*/}
 
                 {/*main content*/}
                 <div id="content">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">
 
-                            <button type="button" id="sidebarCollapse" className="btn">
-                                <i className="fas fa-arrow-left" id="my-arrow"></i>
-                                <span></span>
-                            </button>
+                            {/*<button type="button" id="sidebarCollapse" className="btn">*/}
+                            {/*    <i className="fas fa-arrow-left" id="my-arrow"></i>*/}
+                            {/*    <span></span>*/}
+                            {/*</button>*/}
                             <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
                                     data-toggle="collapse" data-target="#navbarSupportedContent"
                                     aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -94,40 +121,36 @@ export default class Login extends Component {
 
                             <div className="collapse navbar-collapse" id="navbarSupportedContent">
 
-                                <h3>Login</h3>
+                                <div className="col-lg-12 text-center ">
+                                    <header style={{
+                                        textAlign: "center",
+                                        fontSize: "35px",
+                                        fontColor: "black",
+                                        fontFamily: "Lucida Console",
+                                        color: "#636e72"
+                                    }}>
+                                        <h1>Adwenan Land Commission System</h1>
+                                    </header>
+                                </div>
 
-                                <ul className="nav navbar-nav ml-auto">
 
-                                    <li className="nav-item">
-                                        <Link to={'/'}
-                                              className="nav-link dropdown-item "> Home </Link>
-
-                                    </li>
-                                    <li className="nav-item">
-                                        {/*<a className="nav-link" style={styles.hand} onClick={this.renderRedirect('')}>Home</a>*/}
-                                        <div className="dropdown show">
-                                            <button className="btn" role="button"
-                                                    id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                                                    aria-expanded="false"><i className="fas fa-user"></i>
-                                            </button>
-
-                                            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                <Link to={'/register'}
-                                                      className="nav-link dropdown-item "> Register </Link>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </nav>
 
                     <div className="container">
 
+                        <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
+                            <div id="errorBlockText"></div>
+                            <button type="button" className="close" onClick={this.hideErrorNoti}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
 
                         <div className="login_wrapper col-md-4 ml-auto mr-auto">
                             <section className="login_content ">
                                 <div className="shadow-lg p-3 mb-5 bg-white rounded" id="login-form">
+
                                     <form onSubmit={this.validateUser}>
                                         <header>
                                             <h4 style={this.style2}>Login</h4>
@@ -136,15 +159,22 @@ export default class Login extends Component {
 
                                         <div>
                                             <label htmlFor="Email">Email</label>
-                                            <input type="text" name="email" className="form-control"
+                                            <input type="text" name="email" id="email" className="form-control"
                                                    placeholder="example@gh.gov"
                                                    value={this.state.email}
                                                    onChange={this.handleInputChange} required autoFocus/>
+                                            <div className="invalid-feedback">
+                                                Please enter a valid email.
+                                            </div>
+                                            <div className="valid-feedback">
+                                                Valid email entered.
+                                            </div>
                                         </div>
                                         <br/>
                                         <div>
                                             <label htmlFor="Passsword">Password</label>
-                                            <input type="password" name="password" className="form-control"
+                                            <input type="password" name="password" id="passwordinput"
+                                                   className="form-control"
                                                    placeholder="*************"
                                                    value={this.state.password}
                                                    onChange={this.handleInputChange} required/>

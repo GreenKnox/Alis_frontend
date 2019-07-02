@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
-import axios from 'axios/index';
 import '../css/App.css';
-import * as env from "../config";
 import Sidebar from "../components/Sidebar";
 import {Link} from "react-router-dom";
 import $ from "jquery";
 
+var AppState = "";
 
 export default class Home extends Component {
 
@@ -15,12 +14,18 @@ export default class Home extends Component {
         this.state = {
             token: localStorage["appState"] ? JSON.parse(localStorage["appState"]).user.token : "",
             email: localStorage["appState"] ? JSON.parse(localStorage["appState"]).user.email : "",
+            isLoggedin: localStorage["appState"] ? JSON.parse(localStorage["appState"]).isLoggedin : "",
             user: {}
         };
 
     }
 
     componentDidMount() {
+
+        let state = localStorage["appState"];
+        if (state) {
+            AppState = JSON.parse(state);
+        }
 
 
         $('#sidebarCollapse').on('click', function () {
@@ -29,46 +34,29 @@ export default class Home extends Component {
         });
 
 
-        axios.defaults.headers.common = {'Authorization': `Bearer ${this.state.token}`};
-        axios.post(`${env.API_URL}/users/email`, {
-            email: this.state.email
-        })
-            .then(response => {
-                console.log(response);
-                return response;
-            })
-            .then(json => {
-                if (json.status === 200) {
-                    this.setState({user: json.data.data});
-                    console.log("You're logged in!");
-                } else {
-                    console.log("Login Failed!");
-                }
-            })
-            .catch(error => {
-                console.log(`An Error Occurred! ${error}`);
-            });
+        // axios.defaults.headers.common = {'Authorization': `Bearer ${this.state.token}`};
+        // axios.post(`${env.API_URL}/users/email`, {
+        //     email: this.state.email
+        // })
+        //     .then(response => {
+        //         console.log(response);
+        //         return response;
+        //     })
+        //     .then(json => {
+        //         if (json.status === 200) {
+        //             this.setState({user: json.data.data});
+        //             console.log("You're logged in!");
+        //         } else {
+        //             console.log("Login Failed!");
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.log(`An Error Occurred! ${error}`);
+        //     });
     }
 
 
     render() {
-
-        let button;
-
-        if (!this.state.isLoggedIn) {
-            button = <>
-
-                <Link to={'/login'}
-                      className=" dropdown-item "> Login</Link>
-
-                <Link to={'/register'}
-                      className="dropdown-item"> Register</Link>
-            </>
-
-        } else {
-            button =
-                <a className="dropdown-item" href="#" onClick={this.props.logoutUser}>Profile</a>
-        }
 
         return (
             <div className="wrapper">
@@ -112,7 +100,9 @@ export default class Home extends Component {
                                             </button>
 
                                             <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                {button}
+                                                <a className="dropdown-item" href="#"
+                                                   onClick={this.props.logoutUser}>Logout</a>
+                                                <a className="dropdown-item" href="#">Profile</a>
                                             </div>
                                         </div>
                                     </li>

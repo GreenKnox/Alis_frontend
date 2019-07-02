@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios/index';
 import {BrowserRouter as Router, Redirect, Route, Switch, withRouter} from 'react-router-dom'
+import $ from "jquery";
 import './css/index.css';
 
 import Home from './Home/Home';
@@ -40,27 +41,6 @@ class App extends React.Component {
         })
             .then(response => {
                 switch (response.status) {
-                    case 404: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        // display notification that user was not found
-                        alert("User Not Found!");
-                        break;
-                    }
-                    case 400: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        alert("Error!");
-                        break;
-                    }
-                    case 401: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        // password expired, display notification for some time and redirect to reset password
-                        alert("Password Expired, Reset Password!");
-                        setTimeout(this._renderRedirect('reset-password'), 15000);
-                        break;
-                    }
                     case 200: {
                         let userData = {
                             name: response.data.data.username,
@@ -82,6 +62,11 @@ class App extends React.Component {
                         break;
                     }
                     default: {
+                        $("#errorBlockText")
+                            .html(
+                                `<strong>Error! </strong> ${response.data.data.message}.`
+                            );
+                        $("#errorBlock").show();
                         console.log("Nothing was posted");
                         break;
                     }
@@ -91,6 +76,13 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+                    // $("#errorBlockText").text("User Not Found")
+                    $("#errorBlockText")
+                        .html(
+                            `<strong>Error! </strong> ${error.response.data.data.message}.`
+                        );
+                    $("#errorBlock").show();
+
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -202,11 +194,6 @@ class App extends React.Component {
         })
             .then(response => {
                 switch (response.status) {
-                    case 400: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        break;
-                    }
                     case 200: {
                         alert(`Confirm your registration in your email!`);
 
@@ -243,6 +230,13 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+
+                    $("#registrationErrorBlockText")
+                        .html(
+                            `<strong>Error! </strong> ${error.response.data.message}.`
+                        );
+                    $("#registrationErrorBlock").show();
+
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -697,7 +691,6 @@ class App extends React.Component {
 
         if (
             !this.state.isLoggedIn &&
-            this.props.location.pathname !== "/" &&
             this.props.location.pathname !== "/login" &&
             this.props.location.pathname !== "/register" &&
             this.props.location.pathname !== "/forgot-password-email" &&
@@ -715,7 +708,7 @@ class App extends React.Component {
         return (
             <Switch>
                 <Route exact path="/"
-                       render={props => (<Home {...props} user={this.state.user}/>)}
+                       render={props => (<Home {...props} logoutUser={this._logoutUser} user={this.state.user}/>)}
                 />
 
                 <Route path="/login"
