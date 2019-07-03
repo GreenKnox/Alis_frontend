@@ -33,7 +33,7 @@ class App extends React.Component {
     };
 
 
-    _loginUser = (userEmail, userPassword) => {
+     _loginUser = (userEmail, userPassword) => {
         axios.post(`${env.API_URL}/login`, {
             email: userEmail,
             password: userPassword,
@@ -680,14 +680,14 @@ class App extends React.Component {
     };
 
 
-    componentDidMount() {
+    /*componentDidMount() {
         let state = localStorage["appState"];
         if (state) {
             let AppState = JSON.parse(state);
             console.log(AppState);
             this.setState({isLoggedIn: AppState.isLoggedIn, user: AppState.user});
         }
-    }
+    }*/
 
     render() {
         console.log(this.state.isLoggedIn);

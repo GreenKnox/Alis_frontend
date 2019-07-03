@@ -28,8 +28,11 @@ export default class Login extends Component {
         this.state = {
             email: '',
             password: ''
-        }
+        };
 
+    }
+    validateForm() {
+        return this.state.email.length > 0 && this.state.password.length > 0;
     }
 
     handleInputChange = (event) => {
@@ -152,8 +155,8 @@ export default class Login extends Component {
                                         <br/>
                                         <div>
                                             <div>
-                                                <button className="btn btn-outline-success" type="submit"
-                                                        value="Submit">Login
+                                                <button className="btn btn-outline-success" type="submit" disabled={!this.validateForm()}
+                                                        typeof="Submit">Login
                                                 </button>
                                             </div>
                                         </div>
