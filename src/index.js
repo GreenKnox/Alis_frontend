@@ -1,20 +1,24 @@
+//Libraries
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios/index';
 import {BrowserRouter as Router, Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import $ from "jquery";
 import './css/index.css';
-
+//User
 import Home from './Home/Home';
-import Admin from './Admin/Admin'
 import Login from './Users/Login'
-import User from './Users/User'
-import NotFound from './NotFound';
 import Register from './Users/Register'
 import Activated from './Users/Activated'
-import EnterEmail from './Users/forgotpassword/EnterEmail';
-import resetPasswordMap from './mappings/resetPasswordMappings';
 import ForgotPassword from './Users/forgotpassword/ForgotPassword';
+import EnterEmail from './Users/forgotpassword/EnterEmail';
+import resetPasswordMap from './Users/resetpassword/PasswordReset';
+// Admin
+import Admin from './Admin/Admin'
+import User from './Users/Profile/User'
+//Others
+import NotFound from './NotFound';
+
 
 import * as serviceWorker from './serviceWorker';
 import * as env from "./config";
@@ -28,6 +32,7 @@ class App extends React.Component {
             user: {}
         };
     }
+
 
     _renderRedirect = (path) => {
         return <Redirect to={`${path}`}/>
@@ -55,20 +60,28 @@ class App extends React.Component {
                         };
                         // save app state with user date in local storage
                         localStorage["appState"] = JSON.stringify(appState);
-                        this.setState(appState);
                         // login successful, display notification for some time and redirect to home page
-                        this._renderRedirect('/');
-                        alert("Login Successful!");
+                        $('#errorBlock').removeClass("alert-danger");
+                        $('#errorBlock').addClass("alert-success");
+                        $("#errorBlockText")
+                            .html(
+                                `<strong>Success! </strong> Login Successful.`
+                            );
+                        $("#errorBlock").show();
+
+                        $('html, body').animate({
+                            scrollTop: $("#errorBlock").offset().top
+                        }, 200);
+
+
+                        setTimeout(() => {
+                            this.setState(appState, () => {
+                                this._renderRedirect('/')
+                            })
+                        }, 30000);
                         break;
                     }
                     default: {
-                        $("#errorBlockText")
-                            .html(
-                                `<strong>Error! </strong> ${response.data.data.message}.`
-                            );
-                        $("#errorBlock").show();
-                        console.log("Nothing was posted");
-                        break;
                     }
                 }
             })
@@ -76,13 +89,18 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
-                    // $("#errorBlockText").text("User Not Found")
+                    $('#errorBlock').removeClass("alert-success");
+                    $('#errorBlock').addClass("alert-danger");
                     $("#errorBlockText")
                         .html(
-                            `<strong>Error! </strong> ${error.response.data.data.message}.`
+                            `<strong>Error! </strong> ${error.response.data.message}.`
                         );
                     $("#errorBlock").show();
+                    $('html, body').animate({
+                        scrollTop: $("#errorBlock").offset().top
+                    }, 200);
 
+                    console.log(error.response.data.message);
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -110,38 +128,18 @@ class App extends React.Component {
         axios.post(`${env.API_URL}/logout`)
             .then(response => {
                 switch (response.status) {
-                    case 404: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        // display notification that user was not found
-                        alert("User Not Found!");
-                        break;
-                    }
-                    case 400: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        alert("Error!");
-                        break;
-                    }
-                    case 401: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        // password expired, display notification for some time and redirect to reset password
-                        alert("Password Expired, Reset Password!");
-                        setTimeout(this._renderRedirect('reset-password'), 15000);
-                        break;
-                    }
                     case 200: {
                         alert("Logout Successful!");
                         // save app state with user date in local storage
                         localStorage["appState"] = JSON.stringify(appState);
-                        this.setState(appState);
-                        this._renderRedirect('/login');
+                        setTimeout(() => {
+                            this.setState(appState, () => {
+                                this._renderRedirect('/')
+                            })
+                        }, 30000);
                         break;
                     }
                     default: {
-                        //statements;
-                        break;
                     }
                 }
             })
@@ -171,7 +169,7 @@ class App extends React.Component {
         axios.post(`${env.API_URL}/register`, {
             username: userData.username,
             password: userData.password,
-            password_confirmation: userData.passwordconfirmed,
+            password_confirmation: userData.passwordConfirmed,
             first_name: userData.firstname,
             last_name: userData.lastname,
             status: userData.status,
@@ -195,9 +193,6 @@ class App extends React.Component {
             .then(response => {
                 switch (response.status) {
                     case 200: {
-                        alert(`Confirm your registration in your email!`);
-
-
                         let userData = {
                             name: response.data.data.username,
                             id: response.data.data.id,
@@ -212,12 +207,23 @@ class App extends React.Component {
                         };
                         // save app state with user date in local storage
                         localStorage["appState"] = JSON.stringify(appState);
-                        this.setState({
-                            isLoggedIn: appState.isLoggedIn,
-                            user: appState.user
-                        });
-                        // redirect user to somewhere
-                        this.setRedirect("login");
+                        $('#errorBlock').removeClass("alert-danger");
+                        $('#errorBlock').addClass("alert-success");
+                        $("#errorBlockText")
+                            .html(
+                                `<strong>Success! </strong> Registration Successful <br/> Check Your Email Verify`
+                            );
+                        $("#errorBlock").show();
+
+                        $('html, body').animate({
+                            scrollTop: $("#errorBlock").offset().top
+                        }, 200);
+
+                        setTimeout(() => {
+                            this.setState(appState, () => {
+                                this._renderRedirect('/login')
+                            })
+                        }, 30000);
                         break;
                     }
                     default: {
@@ -231,12 +237,18 @@ class App extends React.Component {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
 
-                    $("#registrationErrorBlockText")
+                    $('#errorBlock').removeClass("alert-success");
+                    $('#errorBlock').addClass("alert-danger");
+                    $("#errorBlockText")
                         .html(
                             `<strong>Error! </strong> ${error.response.data.message}.`
                         );
-                    $("#registrationErrorBlock").show();
+                    $("#errorBlock").show();
+                    $('html, body').animate({
+                        scrollTop: $("#errorBlock").offset().top
+                    }, 200);
 
+                    console.log(error.response.data.message);
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -259,21 +271,21 @@ class App extends React.Component {
             .then(function (response) {
                 console.log(response);
                 switch (response.status) {
-                    case 404: {
-                        console.log(`User not found Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        // then display notification to user that the email does not exist in the database
-                        break;
-                    }
                     case 200: {
                         // then display notification to user that email verification has been sent to the mail for password reset
-                        alert();
+                        $('#errorBlock').removeClass("alert-danger");
+                        $('#errorBlock').addClass("alert-success");
+                        $("#errorBlockText")
+                            .html(
+                                `<strong>Success! </strong> Check your email for a password reset link`
+                            );
+                        $("#errorBlock").show();
+                        $('html, body').animate({
+                            scrollTop: $("#errorBlock").offset().top
+                        }, 200);
                         break;
                     }
                     default: {
-                        //statements;
-                        //todo: other error codes
-                        break;
                     }
                 }
             })
@@ -281,6 +293,17 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+                    $('#errorBlock').removeClass("alert-success");
+                    $('#errorBlock').addClass("alert-danger");
+                    $("#errorBlockText")
+                        .html(
+                            `<strong>Error! </strong> ${error.response.data.message}`
+                        );
+                    $("#errorBlock").show();
+                    $('html, body').animate({
+                        scrollTop: $("#errorBlock").offset().top
+                    }, 200);
+                    console.log(error.response.data.message);
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -295,37 +318,40 @@ class App extends React.Component {
                 }
                 console.log(error.config);
             })
-
     };
 
 
     _postForgotPassword = (userPassword, userId, userToken) => {
         axios.post(`${env.API_URL}/postForgot`, {
-                password: userPassword,
-                password_confirmation: userPassword,
-                _uid: userId,
-                _tk_n: userToken
-            }
-        )
+            password: userPassword,
+            password_confirmation: userPassword,
+            _uid: userId,
+            _tk_n: userToken
+        })
             .then(function (response) {
                 console.log(response);
                 switch (response.status) {
-                    case 400: {
-                        console.log(`Looks like there was a problem. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        break;
-                    }
                     case 200: {
-                        this.handleReset();
                         // display to user a notification showing that the password reset was sucessfull and redirect to login
-                        console.log("Password Reset!");
-                        this.renderRedirect("login");
+                        $('#errorBlock').removeClass("alert-danger");
+                        $('#errorBlock').addClass("alert-success");
+                        $("#errorBlockText")
+                            .html(
+                                `<strong>Success! </strong> Password Reset Successful.`
+                            );
+                        $("#errorBlock").show();
+
+                        $('html, body').animate({
+                            scrollTop: $("#errorBlock").offset().top
+                        }, 200);
+
+
+                        setTimeout(() => {
+                            this._renderRedirect('/')
+                        }, 30000);
                         break;
                     }
                     default: {
-                        console.log(`Looks like there was a problem of other status code. Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        break;
                     }
                 }
             })
@@ -333,6 +359,17 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+                    $('#errorBlock').removeClass("alert-success");
+                    $('#errorBlock').addClass("alert-danger");
+                    $("#errorBlockText")
+                        .html(
+                            `<strong>Error! </strong> ${error.response.data.message}`
+                        );
+                    $("#errorBlock").show();
+                    $('html, body').animate({
+                        scrollTop: $("#errorBlock").offset().top
+                    }, 200);
+                    console.log(error.response.data.message);
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -347,7 +384,6 @@ class App extends React.Component {
                 }
                 console.log(error.config);
             })
-
     };
 
 
@@ -714,11 +750,6 @@ class App extends React.Component {
                 <Route path="/login"
                        render={props => (<Login {...props} loginUser={this._loginUser}/>)}
                 />
-
-                <Route path="/logout"
-                       render={props => (<Login {...props} logoutUser={this._logoutUser}/>)}
-                />
-
 
                 <Route path="/register"
                        render={props => (<Register {...props} registerUser={this._registerUser}/>)}

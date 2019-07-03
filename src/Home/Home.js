@@ -14,7 +14,7 @@ export default class Home extends Component {
         this.state = {
             token: localStorage["appState"] ? JSON.parse(localStorage["appState"]).user.token : "",
             email: localStorage["appState"] ? JSON.parse(localStorage["appState"]).user.email : "",
-            isLoggedin: localStorage["appState"] ? JSON.parse(localStorage["appState"]).isLoggedin : "",
+            isLoggedIn: localStorage["appState"] ? JSON.parse(localStorage["appState"]).isLoggedIn : "",
             user: {}
         };
 
@@ -27,10 +27,8 @@ export default class Home extends Component {
             AppState = JSON.parse(state);
         }
 
-
         $('#sidebarCollapse').on('click', function () {
             $('#sidebar').toggleClass('active');
-            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
         });
 
 
@@ -71,9 +69,11 @@ export default class Home extends Component {
                         <div className="container-fluid">
 
                             <button type="button" id="sidebarCollapse" className="btn">
-                                <i className="fas fa-arrow-left" id="my-arrow"></i>
+                                <i className="fas fa-align-justify"></i>
                                 <span></span>
                             </button>
+
+
                             <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
                                     data-toggle="collapse" data-target="#navbarSupportedContent"
                                     aria-controls="navbarSupportedContent" aria-expanded="false"

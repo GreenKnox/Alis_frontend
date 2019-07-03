@@ -22,9 +22,7 @@ export default class Register extends Component {
     constructor(props) {
         super(props);
 
-        //todo store registration requirements into a object and call it wherever needed
         this.state = {
-            allClear: true,
             firstname: '',
             lastname: '',
             username: '',
@@ -49,7 +47,6 @@ export default class Register extends Component {
         }
     }
 
-
     handleInputChange = (event) => {
         const target = event.target;
         const value = (target.type === 'checkbox') ? target.checked : target.value;
@@ -57,94 +54,66 @@ export default class Register extends Component {
         this.setState({
             [name]: value
         });
+    };
+
+    handlePasswordInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validatePassword()
+        });
 
     };
 
-
-    // regex to validate url
-    // testUrl = (url) => {
-    //     return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(url);
-    // };
-
-    validateWebsiteAddress = (url) => {
-        let urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/;
-        if (!urlRegex.test(this.state.websiteaddress)) {
-            $('#websiteAddress').removeClass("is-valid");
-            $('#websiteAddress').addClass("is-invalid")
-        } else {
-            $('#websiteAddress').removeClass("is-invalid");
-            $('#websiteAddress').addClass("is-valid")
-        }
-    };
-
-    // regex to validate email
-    validateEmail = (email) => {
-        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-        if (!re.test(this.state.email)) {
-            $('#email').removeClass("is-valid");
-            $('#email').addClass("is-invalid")
-        } else {
-            $('#email').removeClass("is-invalid");
-            $('#email').addClass("is-valid")
-        }
+    handlePasswordConfirmInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validatePasswordMatch()
+        });
 
     };
 
-    validateDigit = (event) => {
-        switch (event.target.name) {
-            case "phone": {
-                if (this.state.phone.length < 9) {
-                    $('#phone').removeClass("is-valid");
-                    $('#phone').addClass("is-invalid");
-                    this.setState({
-                        allClear: false
-                    })
-                } else {
-                    $('#phone').removeClass("is-invalid");
-                    $('#phone').addClass("is-valid");
-                    this.setState({
-                        allClear: true
-                    })
-                }
-                break
-            }
-            case "fax": {
-                if (this.state.fax.length < 9) {
-                    $('#fax').removeClass("is-valid");
-                    $('#fax').addClass("is-invalid");
-                    this.setState({
-                        allClear: false
-                    })
-                } else {
-                    $('#fax').removeClass("is-invalid");
-                    $('#fax').addClass("is-valid");
-                    this.setState({
-                        allClear: true
-                    })
-                }
-                break
-            }
-            case "mobile": {
-                if (this.state.mobile.length < 9) {
-                    $('#mobile').removeClass("is-valid");
-                    $('#mobile').addClass("is-invalid");
-                    this.setState({
-                        allClear: false
-                    })
-                } else {
-                    $('#mobile').removeClass("is-invalid");
-                    $('#mobile').addClass("is-valid");
-                    this.setState({
-                        allClear: true
-                    })
-                }
-                break
-            }
-            default: {
+    handleEmailInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateEmail()
+        });
 
-            }
-        }
+    };
+
+    handleWebsiteInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateWebsiteAddress()
+        });
+
+    };
+
+    handleDigitInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateDigit(name)
+        });
+
     };
 
     validatePassword = () => {
@@ -158,44 +127,140 @@ export default class Register extends Component {
             $('#passwordInput').removeClass("is-valid");
             $('#passwordInput').addClass("is-invalid")
         }
+
+        if (!this.state.password) {
+            $('#passwordInput').removeClass("is-valid");
+            $('#passwordInput').removeClass("is-invalid");
+        }
     };
 
     validatePasswordMatch = () => {
 
-        if (this.state.password === this.state.passwordconfirmed) {
+        if (this.state.password === this.state.passwordConfirmed) {
             $('#passwordInputMatch').removeClass("is-invalid");
             $('#passwordInputMatch').addClass("is-valid")
         } else {
             $('#passwordInputMatch').removeClass("is-valid");
             $('#passwordInputMatch').addClass("is-invalid")
         }
+
+        if (!this.state.passwordConfirmed) {
+            $('#passwordInputMatch').removeClass("is-valid");
+            $('#passwordInputMatch').removeClass("is-invalid");
+        }
     };
 
+    validateEmail = () => {
+        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if (!re.test(this.state.email)) {
+            $('#email').removeClass("is-valid");
+            $('#email').addClass("is-invalid")
+        } else {
+            $('#email').removeClass("is-invalid");
+            $('#email').addClass("is-valid")
+        }
+
+        if (!this.state.email) {
+            $('#email').removeClass("is-valid");
+            $('#email').removeClass("is-invalid");
+        }
+    };
+
+    validateWebsiteAddress = () => {
+        let urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/;
+        if (!urlRegex.test(this.state.websiteaddress)) {
+            $('#websiteAddress').removeClass("is-valid");
+            $('#websiteAddress').addClass("is-invalid");
+        } else {
+            $('#websiteAddress').removeClass("is-invalid");
+            $('#websiteAddress').addClass("is-valid");
+        }
+
+        if (!this.state.websiteaddress) {
+            $('#websiteAddress').removeClass("is-valid");
+            $('#websiteAddress').removeClass("is-invalid");
+        }
+    };
+
+    validateDigit = (name) => {
+        switch (name) {
+            case "phone": {
+                if (this.state.phone.length !== 10) {
+                    $('#phone').removeClass("is-valid");
+                    $('#phone').addClass("is-invalid");
+                } else {
+                    $('#phone').removeClass("is-invalid");
+                    $('#phone').addClass("is-valid");
+                }
+                if (this.state.phone) {
+                    $('#phone').removeClass("is-valid");
+                    $('#phone').removeClass("is-invalid");
+                }
+                break
+            }
+            case "fax": {
+                if (this.state.fax.length !== 10) {
+                    $('#fax').removeClass("is-valid");
+                    $('#fax').addClass("is-invalid");
+                } else {
+                    $('#fax').removeClass("is-invalid");
+                    $('#fax').addClass("is-valid");
+                }
+                if (!this.state.fax) {
+                    $('#fax').removeClass("is-valid");
+                    $('#fax').removeClass("is-invalid");
+                }
+                break
+            }
+            case "mobile": {
+                if (this.state.mobile.length !== 10) {
+                    $('#mobile').removeClass("is-valid");
+                    $('#mobile').addClass("is-invalid");
+                } else {
+                    $('#mobile').removeClass("is-invalid");
+                    $('#mobile').addClass("is-valid");
+                }
+
+                if (!this.state.mobile) {
+                    $('#mobile').removeClass("is-valid");
+                    $('#mobile').removeClass("is-invalid");
+                }
+                break
+            }
+            default: {
+            }
+        }
+    };
 
     sendRequest = (event) => {
         event.preventDefault();
         // check if user passwords match
         if ($("input").hasClass("is-invalid")) {
-            $("#registrationErrorBlockText")
+
+            $('#errorBlock').removeClass("alert-success");
+            $('#errorBlock').addClass("alert-danger");
+            $("#errorBlockText")
                 .html(
-                    `<strong>Error! </strong> Incorrect value provided for an input.`
+                    `<strong>Error! </strong> An Incorrect Input Was Provided.`
                 );
-            $("#registrationErrorBlock").show()
+            $("#errorBlock").show();
+            $('html, body').animate({
+                scrollTop: $("#errorBlock").offset().top
+            }, 200);
         }
         else {
             this.props.registerUser(this.state);
         }
     };
 
+    hideErrorNotification = () => {
+        $('#errorBlock').hide()
+    };
+
     componentDidMount() {
 
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
-            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
-        });
-
-        $('#registrationErrorBlock').hide();
-        // $("#passwordConfirmedInput").css("box-shadow", "0 0 10px red" );
+        $('#ErrorBlock').hide();
 
 
         $('#next_1').click(function (e) {
@@ -236,29 +301,10 @@ export default class Register extends Component {
         return (
 
             <div className="wrapper">
-
-                {/*sidebar*/}
-                {/*<Sidebar/>*/}
-
-                {/*main content*/}
                 <div id="content">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">
-
-                            {/*<button type="button" id="sidebarCollapse" className="btn">*/}
-                            {/*    <i className="fas fa-arrow-left" id="my-arrow"></i>*/}
-                            {/*    <span></span>*/}
-                            {/*</button>*/}
-                            <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
-                                    data-toggle="collapse" data-target="#navbarSupportedContent"
-                                    aria-controls="navbarSupportedContent" aria-expanded="false"
-                                    aria-label="Toggle navigation">
-                                <i className="fas fa-align-justify"></i>
-                            </button>
-
-                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-
-                                <div className="col-lg-12 text-center ">
+                            <div className="col-sm-12 text-center ">
                                     <header style={{
                                         textAlign: "center",
                                         fontSize: "35px",
@@ -269,18 +315,14 @@ export default class Register extends Component {
                                         <h1>Adwenan Land Commission System</h1>
                                     </header>
                                 </div>
-
-
-                            </div>
                         </div>
                     </nav>
 
                     <div className="container">
 
-                        <div className="alert alert-danger alert-dismissible fade show" role="alert"
-                             id="registrationErrorBlock">
-                            <div id="registrationErrorBlockText"></div>
-                            <button type="button" className="close" onclick={$('.alert').hide()}>
+                        <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
+                            <div id="errorBlockText"></div>
+                            <button type="button" className="close" onClick={this.hideErrorNotification}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -353,9 +395,9 @@ export default class Register extends Component {
                                                     <input type="password" id="passwordInput" className="form-control"
                                                            placeholder="Password "
                                                            name="password" value={this.state.password}
-                                                           onChange={this.handleInputChange}
-                                                           onInput={this.validatePassword} required/>
-                                                    {/*<span id="#passwordHelpText">Password strength: Weak</span>*/}
+                                                           onChange={this.handlePasswordInputChange}
+                                                        // onPaste={this.validatePassword}
+                                                           required/>
                                                     <div className="invalid-feedback">
                                                         Password must be 8 characters long and
                                                         <br/>
@@ -375,9 +417,10 @@ export default class Register extends Component {
                                                     <input type="password" id="passwordInputMatch"
                                                            className="form-control"
                                                            placeholder="Confirm Password "
-                                                           name="passwordconfirmed" value={this.state.passwordconfirmed}
-                                                           onChange={this.handleInputChange}
-                                                           onInput={this.validatePasswordMatch} required/>
+                                                           name="passwordconfirmed" value={this.state.passwordConfirmed}
+                                                           onChange={this.handlePasswordConfirmInputChange}
+                                                        // onPaste={this.validatePasswordMatch}
+                                                           required/>
                                                     <div className="invalid-feedback">
                                                         Passwords do not match !.
                                                     </div>
@@ -393,8 +436,8 @@ export default class Register extends Component {
                                                     <input type="text" id="email" className="form-control"
                                                            placeholder="Email"
                                                            name="email"
-                                                           value={this.state.email} onChange={this.handleInputChange}
-                                                           onInput={this.validateEmail}
+                                                           value={this.state.email}
+                                                           onChange={this.handleEmailInputChange}
                                                            required/>
                                                     <div className="invalid-feedback">
                                                         Please enter a valid email.
@@ -504,16 +547,16 @@ export default class Register extends Component {
                                                 <br/>
                                                 <div>
                                                     <label>Phone</label>
-                                                    <input type="text" id="phone" className="form-control"
+                                                    <input type="number" size="10" id="phone" className="form-control"
                                                            placeholder="Phone"
                                                            name="phone"
-                                                           value={this.state.phone} onChange={this.handleInputChange}
-                                                           onInput={this.validateDigit}
+                                                           value={this.state.phone}
+                                                           onChange={this.handleDigitInputChange}
                                                            required/>
                                                     <div className="invalid-feedback">
-                                                        Please enter a valid phone number
+                                                        Phone number must be 10 digits
                                                         <br/>
-                                                        e.g. 0501111111
+                                                        e.g. 0506392618
                                                     </div>
                                                     <div className="valid-feedback">
                                                         Valid phone number entered.
@@ -523,16 +566,14 @@ export default class Register extends Component {
                                                 <br/>
                                                 <div>
                                                     <label>Fax</label>
-                                                    <input type="text" id="fax" className="form-control"
+                                                    <input type="number" size="10" id="fax" className="form-control"
                                                            placeholder="Fax"
                                                            name="fax"
-                                                           value={this.state.fax} onChange={this.handleInputChange}
-                                                           onInput={this.validateDigit}
+                                                           value={this.state.fax}
+                                                           onChange={this.handleDigitInputChange}
                                                            required/>
                                                     <div className="invalid-feedback">
-                                                        Please enter a valid fax number
-                                                        {/*<br/>*/}
-                                                        {/*e.g. 0501111111*/}
+                                                        Fax number must be 10 digits
                                                     </div>
                                                     <div className="valid-feedback">
                                                         Valid fax number entered entered.
@@ -542,16 +583,14 @@ export default class Register extends Component {
                                                 <br/>
                                                 <div>
                                                     <label>Mobile</label>
-                                                    <input type="text" id="mobile" className="form-control"
-                                                           placeholder="0501111111"
+                                                    <input type="number" size="10" id="mobile" className="form-control"
+                                                           placeholder="mobile"
                                                            name="mobile"
-                                                           value={this.state.mobile} onChange={this.handleInputChange}
-                                                           onInput={this.validateDigit}
+                                                           value={this.state.mobile}
+                                                           onChange={this.handleDigitInputChange}
                                                            required/>
                                                     <div className="invalid-feedback">
-                                                        Please enter a valid mobile number
-                                                        <br/>
-                                                        e.g. 0501111111
+                                                        Mobile number must be 10 digits
                                                     </div>
                                                     <div className="valid-feedback">
                                                         Valid mobile number entered.
@@ -564,8 +603,8 @@ export default class Register extends Component {
                                                     <input type="text" id="websiteAddress" className="form-control"
                                                            placeholder="Website Address"
                                                            name="websiteaddress" value={this.state.websiteaddress}
-                                                           onChange={this.handleInputChange}
-                                                           onInput={this.validateWebsiteAddress} required/>
+                                                           onChange={this.handleWebsiteInputChange}
+                                                           required/>
                                                     <div className="invalid-feedback">
                                                         Please enter a valid website Address
                                                         <br/>

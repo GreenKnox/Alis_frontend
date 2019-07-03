@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Link, Redirect} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import '../css/admin.css';
 import $ from "jquery";
 
@@ -39,8 +39,24 @@ export default class Login extends Component {
         this.setState({
             [name]: value
         });
+    };
 
-        if (!this.validateEmail(this.state.email)) {
+    handleEmailInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateEmail()
+        });
+
+    };
+
+    validateEmail = () => {
+        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if (!re.test(this.state.email)) {
             $('#email').removeClass("is-valid");
             $('#email').addClass("is-invalid")
         } else {
@@ -49,45 +65,29 @@ export default class Login extends Component {
         }
     };
 
-
-    renderRedirect = (path) => {
-        return <Redirect to={`${path}`}/>
-    };
-
-
     validateUser = (event) => {
         event.preventDefault();
         if (this.state.email.trim() && this.state.password.trim()) {
-
-            if (this.validateEmail(this.state.email.trim())) {
-                this.props.loginUser(this.state.email, this.state.password);
-            } else {
-                $('#email').addClass("is-invalid")
-            }
+            this.props.loginUser(this.state.email, this.state.password);
         } else {
+            $('#errorBlock').removeClass("alert-success");
+            $('#errorBlock').addClass("alert-danger");
             $("#errorBlockText")
                 .html(
-                    `<strong>Error! </strong> Empty Input Provided.`
+                    `<strong>Error! </strong> An Empty Input Was Provided.`
                 );
-            $("#errorBlock").show()
+            $("#errorBlock").show();
+            $('html, body').animate({
+                scrollTop: $("#errorBlock").offset().top
+            }, 200);
         }
     };
 
-    validateEmail = (email) => {
-        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
-    };
-
-    hideErrorNoti = () => {
+    hideErrorNotification = () => {
         $('#errorBlock').hide()
     };
 
     componentDidMount() {
-
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
-            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
-        });
 
         $('#errorBlock').hide()
     }
@@ -99,41 +99,19 @@ export default class Login extends Component {
     render() {
         return (
             <div className="wrapper">
-
-                {/*sidebar*/}
-                {/*<Sidebar/>*/}
-
-                {/*main content*/}
                 <div id="content">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">
-
-                            {/*<button type="button" id="sidebarCollapse" className="btn">*/}
-                            {/*    <i className="fas fa-arrow-left" id="my-arrow"></i>*/}
-                            {/*    <span></span>*/}
-                            {/*</button>*/}
-                            <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
-                                    data-toggle="collapse" data-target="#navbarSupportedContent"
-                                    aria-controls="navbarSupportedContent" aria-expanded="false"
-                                    aria-label="Toggle navigation">
-                                <i className="fas fa-align-justify"></i>
-                            </button>
-
-                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-
-                                <div className="col-lg-12 text-center ">
-                                    <header style={{
-                                        textAlign: "center",
-                                        fontSize: "35px",
-                                        fontColor: "black",
-                                        fontFamily: "Lucida Console",
-                                        color: "#636e72"
-                                    }}>
-                                        <h1>Adwenan Land Commission System</h1>
-                                    </header>
-                                </div>
-
-
+                            <div className="col-sm-12 text-center ">
+                                <header style={{
+                                    textAlign: "center",
+                                    fontSize: "35px",
+                                    fontColor: "black",
+                                    fontFamily: "Lucida Console",
+                                    color: "#636e72"
+                                }}>
+                                    <h1>Adwenan Land Commission System</h1>
+                                </header>
                             </div>
                         </div>
                     </nav>
@@ -142,7 +120,7 @@ export default class Login extends Component {
 
                         <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
                             <div id="errorBlockText"></div>
-                            <button type="button" className="close" onClick={this.hideErrorNoti}>
+                            <button type="button" className="close" onClick={this.hideErrorNotification}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -162,7 +140,7 @@ export default class Login extends Component {
                                             <input type="text" name="email" id="email" className="form-control"
                                                    placeholder="example@gh.gov"
                                                    value={this.state.email}
-                                                   onChange={this.handleInputChange} required autoFocus/>
+                                                   onChange={this.handleEmailInputChange} required autoFocus/>
                                             <div className="invalid-feedback">
                                                 Please enter a valid email.
                                             </div>
@@ -206,8 +184,6 @@ export default class Login extends Component {
                                 </div>
                             </section>
                         </div>
-
-
                     </div>
                 </div>
 
