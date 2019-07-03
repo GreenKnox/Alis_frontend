@@ -5,7 +5,7 @@ import {Redirect} from 'react-router-dom'
 import $ from "jquery";
 
 
-export default class passwordReset extends Component {
+export default class PasswordReset extends Component {
 
     constructor(props) {
         super(props);

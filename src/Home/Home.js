@@ -20,6 +20,11 @@ export default class Home extends Component {
 
     }
 
+    hideErrorNotification = () => {
+        $('#errorBlock').hide()
+    };
+
+
     componentDidMount() {
 
         let state = localStorage["appState"];
@@ -31,6 +36,7 @@ export default class Home extends Component {
             $('#sidebar').toggleClass('active');
         });
 
+        $('#errorBlock').hide()
 
         // axios.defaults.headers.common = {'Authorization': `Bearer ${this.state.token}`};
         // axios.post(`${env.API_URL}/users/email`, {
@@ -112,6 +118,13 @@ export default class Home extends Component {
                     </nav>
 
                     <div className="container">
+
+                        <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
+                            <div id="errorBlockText"></div>
+                            <button type="button" className="close" onClick={this.hideErrorNotification}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
 
 
                     </div>

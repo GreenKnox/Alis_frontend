@@ -187,15 +187,15 @@ export default class Register extends Component {
         switch (name) {
             case "phone": {
                 if (this.state.phone.length !== 10) {
-                    $('#phone').removeClass("is-valid");
-                    $('#phone').addClass("is-invalid");
+                    $('#phoneNumber').removeClass("is-valid");
+                    $('#phoneNumber').addClass("is-invalid");
                 } else {
-                    $('#phone').removeClass("is-invalid");
-                    $('#phone').addClass("is-valid");
+                    $('#phoneNumber').removeClass("is-invalid");
+                    $('#phoneNumber').addClass("is-valid");
                 }
-                if (this.state.phone) {
-                    $('#phone').removeClass("is-valid");
-                    $('#phone').removeClass("is-invalid");
+                if (!this.state.phone) {
+                    $('#phoneNumber').removeClass("is-valid");
+                    $('#phoneNumber').removeClass("is-invalid");
                 }
                 break
             }
@@ -260,7 +260,7 @@ export default class Register extends Component {
 
     componentDidMount() {
 
-        $('#ErrorBlock').hide();
+        $('#errorBlock').hide();
 
 
         $('#next_1').click(function (e) {
@@ -396,7 +396,6 @@ export default class Register extends Component {
                                                            placeholder="Password "
                                                            name="password" value={this.state.password}
                                                            onChange={this.handlePasswordInputChange}
-                                                        // onPaste={this.validatePassword}
                                                            required/>
                                                     <div className="invalid-feedback">
                                                         Password must be 8 characters long and
@@ -417,9 +416,8 @@ export default class Register extends Component {
                                                     <input type="password" id="passwordInputMatch"
                                                            className="form-control"
                                                            placeholder="Confirm Password "
-                                                           name="passwordconfirmed" value={this.state.passwordConfirmed}
+                                                           name="passwordConfirmed" value={this.state.passwordConfirmed}
                                                            onChange={this.handlePasswordConfirmInputChange}
-                                                        // onPaste={this.validatePasswordMatch}
                                                            required/>
                                                     <div className="invalid-feedback">
                                                         Passwords do not match !.
@@ -464,7 +462,7 @@ export default class Register extends Component {
 
                                                 <div>
                                                     <label>Staff Number</label>
-                                                    <input type="text" className="form-control"
+                                                    <input type="number" className="form-control"
                                                            placeholder="Staff number"
                                                            name="staffnumber" value={this.state.staffnumber}
                                                            onChange={this.handleInputChange} required/>
@@ -483,7 +481,8 @@ export default class Register extends Component {
                                                 <br/>
                                                 <div>
                                                     <label>Company ID</label>
-                                                    <input type="text" className="form-control" placeholder="Company ID"
+                                                    <input type="number" className="form-control"
+                                                           placeholder="Company ID"
                                                            name="companyid" value={this.state.companyid}
                                                            onChange={this.handleInputChange} required/>
                                                 </div>
@@ -547,7 +546,8 @@ export default class Register extends Component {
                                                 <br/>
                                                 <div>
                                                     <label>Phone</label>
-                                                    <input type="number" size="10" id="phone" className="form-control"
+                                                    <input type="number" size="10" id="phoneNumber"
+                                                           className="form-control"
                                                            placeholder="Phone"
                                                            name="phone"
                                                            value={this.state.phone}
@@ -562,7 +562,6 @@ export default class Register extends Component {
                                                         Valid phone number entered.
                                                     </div>
                                                 </div>
-
                                                 <br/>
                                                 <div>
                                                     <label>Fax</label>

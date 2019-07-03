@@ -5,15 +5,15 @@ import axios from 'axios/index';
 import {BrowserRouter as Router, Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import $ from "jquery";
 import './css/index.css';
-//User
-import Home from './Home/Home';
+// Auth-free components
 import Login from './Users/Login'
 import Register from './Users/Register'
 import Activated from './Users/Activated'
 import ForgotPassword from './Users/forgotpassword/ForgotPassword';
 import EnterEmail from './Users/forgotpassword/EnterEmail';
-import resetPasswordMap from './Users/resetpassword/PasswordReset';
-// Admin
+import PasswordReset from './Users/resetpassword/PasswordReset';
+// Auth required components
+import Home from './Home/Home';
 import Admin from './Admin/Admin'
 import User from './Users/Profile/User'
 //Others
@@ -78,7 +78,7 @@ class App extends React.Component {
                             this.setState(appState, () => {
                                 this._renderRedirect('/')
                             })
-                        }, 30000);
+                        }, 10000);
                         break;
                     }
                     default: {
@@ -129,14 +129,27 @@ class App extends React.Component {
             .then(response => {
                 switch (response.status) {
                     case 200: {
-                        alert("Logout Successful!");
                         // save app state with user date in local storage
                         localStorage["appState"] = JSON.stringify(appState);
+                        // login successful, display notification for some time and redirect to home page
+                        $('#errorBlock').removeClass("alert-danger");
+                        $('#errorBlock').addClass("alert-success");
+                        $("#errorBlockText")
+                            .html(
+                                `<strong>Success! </strong> Logout Successful.`
+                            );
+                        $("#errorBlock").show();
+
+                        $('html, body').animate({
+                            scrollTop: $("#errorBlock").offset().top
+                        }, 200);
+
+
                         setTimeout(() => {
                             this.setState(appState, () => {
                                 this._renderRedirect('/')
                             })
-                        }, 30000);
+                        }, 10000);
                         break;
                     }
                     default: {
@@ -147,6 +160,18 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+                    $('#errorBlock').removeClass("alert-success");
+                    $('#errorBlock').addClass("alert-danger");
+                    $("#errorBlockText")
+                        .html(
+                            `<strong>Error! </strong> ${error.response.data.message}.`
+                        );
+                    $("#errorBlock").show();
+                    $('html, body').animate({
+                        scrollTop: $("#errorBlock").offset().top
+                    }, 200);
+
+                    console.log(error.response.data.message);
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -211,7 +236,7 @@ class App extends React.Component {
                         $('#errorBlock').addClass("alert-success");
                         $("#errorBlockText")
                             .html(
-                                `<strong>Success! </strong> Registration Successful <br/> Check Your Email Verify`
+                                `<strong>Success! </strong> Registration Successful <br/> Check Your Email And Verify`
                             );
                         $("#errorBlock").show();
 
@@ -223,7 +248,7 @@ class App extends React.Component {
                             this.setState(appState, () => {
                                 this._renderRedirect('/login')
                             })
-                        }, 30000);
+                        }, 10000);
                         break;
                     }
                     default: {
@@ -236,7 +261,6 @@ class App extends React.Component {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
-
                     $('#errorBlock').removeClass("alert-success");
                     $('#errorBlock').addClass("alert-danger");
                     $("#errorBlockText")
@@ -259,9 +283,8 @@ class App extends React.Component {
                     console.log(error.request);
                 } else {
                     // Something happened in setting up the request that triggered an Error
-                    console.log('Error', error.message);
+                    console.log('Error: ', error.message);
                 }
-                console.log(error.config);
             })
     };
 
@@ -348,7 +371,7 @@ class App extends React.Component {
 
                         setTimeout(() => {
                             this._renderRedirect('/')
-                        }, 30000);
+                        }, 10000);
                         break;
                     }
                     default: {
@@ -710,84 +733,92 @@ class App extends React.Component {
     };
 
 
+
     componentDidMount() {
         let state = localStorage["appState"];
         if (state) {
             let AppState = JSON.parse(state);
-            console.log(AppState);
             this.setState({isLoggedIn: AppState.isLoggedIn, user: AppState.user});
         }
     }
 
     render() {
-        console.log(this.state.isLoggedIn);
-        // console.log(this.state.user);
+        console.log("User Logged In: " + this.state.isLoggedIn);
         console.log("path name: " + this.props.location.pathname);
 
-
-        if (
-            !this.state.isLoggedIn &&
-            this.props.location.pathname !== "/login" &&
-            this.props.location.pathname !== "/register" &&
-            this.props.location.pathname !== "/forgot-password-email" &&
-            this.props.location.pathname !== "/activated" &&
-            this.props.location.pathname !== "/forgot-password"
-        ) {
-            // alert("login first")
-            console.log("you are not logged in and are visiting a page not login or register, go back to login page");
-            this.props.history.push("/login");
-        }
-        if (this.state.isLoggedIn && (this.props.location.pathname === "/login" || this.props.location.pathname === "/register")) {
-            console.log("you are either going to login or register but you're logged in");
-            this.props.history.push("/");
-        }
         return (
             <Switch>
                 <Route exact path="/"
-                       render={props => (<Home {...props} logoutUser={this._logoutUser} user={this.state.user}/>)}
+                       render={props =>
+                           this.state.isLoggedIn ?
+                               (<Home {...props} logoutUser={this._logoutUser} user={this.state.user}/>) :
+                               (<Redirect to={{pathname: "/login"}}/>)}
                 />
 
-                <Route path="/login"
-                       render={props => (<Login {...props} loginUser={this._loginUser}/>)}
-                />
-
-                <Route path="/register"
-                       render={props => (<Register {...props} registerUser={this._registerUser}/>)}
-                />
-
-                <Route path="/activated"
-                       render={props => (<Activated {...props} activated={this._preForgotPassword}/>)}
-                />
-
-                <Route path="/forgot-password"
-                       render={props => (<ForgotPassword {...props} forgotPassword={this._postForgotPassword}/>)}
-                />
-
-                <Route path="/forgot-password-email"
-                       render={props => (<EnterEmail {...props} forgotPassword={this._preForgotPassword}/>)}
-                />
-
-
-                <Route path="/admin"
-                       render={props => (
-                           <Admin {...props}
-                                  logoutUser={this._logoutUser}
-                               // getUsers={this._getUsers}
-                               // getUserByEmail={this._getUserByEmail}
-                               // getModule={this._getModule()}
-                               // getAllModules={this._getAllModules}
-                               // addModule={this._addModule}
-                               // updateModule={this._updateModule}
-                               // deleteModule={this._deleteModule}
-                           />)}
+                <Route exact path="/admin"
+                       render={props =>
+                           this.state.isLoggedIn ?
+                               (<Admin {...props} logoutUser={this._logoutUser}/>) :
+                               (<Redirect to={{pathname: "/login"}}/>)}
                 />
 
                 <Route path="/user"
-                       render={props => (<User {...props}/>)}
+                       render={props =>
+                           this.state.isLoggedIn ?
+                               (<User {...props} logoutUser={this._logoutUser}/>) :
+                               (<Redirect to={{pathname: "/login"}}/>)}
+                />
+
+                <Route exact path="/login"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<Login {...props} loginUser={this._loginUser}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
+                />
+
+                <Route exact path="/register"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<Register {...props} registerUser={this._registerUser}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
                 />
 
 
-                <Route path="/reset-password" component={resetPasswordMap}/>
+                <Route exact path="/forgot-password-email"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<EnterEmail {...props} forgotPassword={this._preForgotPassword}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
+                />
+
+                <Route exact path="/forgot-password"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<ForgotPassword {...props} forgotPassword={this._postForgotPassword}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
+                />
+
+                <Route exact path="/activated"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<Activated {...props} activated={this._preForgotPassword}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
+                />
+
+                <Route exact path="/activated"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<Activated {...props} activated={this._preForgotPassword}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
+                />
+
+
+                <Route exact path="/activated"
+                       render={props =>
+                           !this.state.isLoggedIn ?
+                               (<PasswordReset {...props} activated={this._preForgotPassword}/>) :
+                               (<Redirect to={{pathname: "/"}}/>)}
+                />
 
                 <Route component={NotFound}/>
             </Switch>
@@ -803,18 +834,6 @@ const routingProvider = (
 
     <Router>
         <div>
-            {/*<ul>*/}
-            {/*    <li>*/}
-            {/*        <NavLink exact activeClassName="active" to="/login">*/}
-            {/*            Login*/}
-            {/*        </NavLink>*/}
-            {/*    </li>*/}
-            {/*    <li>*/}
-            {/*        <NavLink exact activeClassName="active" to="/register">*/}
-            {/*            Register*/}
-            {/*        </NavLink>*/}
-            {/*    </li>*/}
-            {/*</ul>*/}
             <AppContainer/>
         </div>
     </Router>

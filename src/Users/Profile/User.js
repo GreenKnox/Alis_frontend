@@ -4,7 +4,7 @@ import queryString from "query-string/index";
 import * as env from "../../config";
 import axios from 'axios/index';
 import '../../css/user.css';
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../components/Sidebar";
 
 
 var tempDetails = {};
