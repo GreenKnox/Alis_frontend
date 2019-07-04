@@ -15,8 +15,6 @@ const styles = {
     },
 };
 
-var allUsers = [];
-var tempUser = [];
 var tempUsers = [];
 
 export default class Admin extends Component {
@@ -51,22 +49,23 @@ export default class Admin extends Component {
     };
 
 
-    handleClearForm = () => {
-        this.setState({})
-    };
-
-
     renderRedirect = (path) => {
-        return <Redirect to={`/${path}`}/>
+        return <Redirect to={`${path}`}/>
     };
 
+    hideErrorNotification = () => {
+        $('#errorBlock').hide()
+    };
 
     componentDidMount() {
+        let allUsers = [];
+        let tempUser = [];
 
         $('#sidebarCollapse').on('click', function () {
             $('#sidebar').toggleClass('active');
-            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
         });
+
+        $('#errorBlock').hide();
 
         let state = localStorage["appState"];
         if (state) {
@@ -78,12 +77,6 @@ export default class Admin extends Component {
         axios.get(`${env.API_URL}/users`)
             .then(function (response) {
                 switch (response.status) {
-                    case 404: {
-                        console.log(`User not found Status Code: ${response.status}`);
-                        console.log(`Error: ${response.message}`);
-                        // then display notification to user that the email does not exist in the database
-                        break;
-                    }
                     case 200: {
                         // then display notification to user that email verification has been sent to the mail for password reset
                         allUsers = response.data.data;
@@ -95,21 +88,29 @@ export default class Admin extends Component {
                             tempUsers.push(tempUser);
                             tempUser = []
                         }
-                        console.log(tempUsers);
+
 
                         break;
                     }
-                    default: {
-                        //statements;
-                        //todo: other error codes
-                        break;
-                    }
+                    default:
                 }
             })
             .catch(function (error) {
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
+                    $('#errorBlock').removeClass("alert-success");
+                    $('#errorBlock').addClass("alert-danger");
+                    $("#errorBlockText")
+                        .html(
+                            `<strong>Error! </strong> ${error.response.data.message}.`
+                        );
+                    $("#errorBlock").show();
+                    $('html, body').animate({
+                        scrollTop: $("#errorBlock").offset().top
+                    }, 200);
+
+                    console.log(error.response.data.message);
                     console.log(error.response.data);
                     console.log(error.response.status);
                     console.log(error.response.headers);
@@ -142,9 +143,10 @@ export default class Admin extends Component {
                         <div className="container-fluid">
 
                             <button type="button" id="sidebarCollapse" className="btn">
-                                <i className="fas fa-arrow-left" id="my-arrow"></i>
+                                <i className="fas fa-align-justify"></i>
                                 <span></span>
                             </button>
+
                             <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
                                     data-toggle="collapse" data-target="#navbarSupportedContent"
                                     aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -186,6 +188,12 @@ export default class Admin extends Component {
 
                     <div className="container">
 
+                        <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
+                            <div id="errorBlockText"></div>
+                            <button type="button" className="close" onClick={this.hideErrorNotification}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
 
                         <div className="row">
 

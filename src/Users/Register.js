@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Sidebar from "../components/Sidebar";
 import {Link} from "react-router-dom";
 import $ from "jquery";
 import 'bootstrap';
@@ -12,27 +11,17 @@ const styles = {
     style2: {
         marginTop: '10px',
     },
-    style3: {
-        fontFamily: 'Lucida Console',
-        color: '#636e72'
+    showColor: {
+        'color': '#007bff',
     }
 };
 
-var errorTexts = {
-    password: '',
-    phone: '',
-    fax: '',
-    mobile: '',
-    websiteaddress: '',
-    error: false
-};
 
 export default class Register extends Component {
 
     constructor(props) {
         super(props);
 
-        //todo store registration requirements into a object and call it wherever needed
         this.state = {
             firstname: '',
             lastname: '',
@@ -58,7 +47,6 @@ export default class Register extends Component {
         }
     }
 
-
     handleInputChange = (event) => {
         const target = event.target;
         const value = (target.type === 'checkbox') ? target.checked : target.value;
@@ -68,114 +56,212 @@ export default class Register extends Component {
         });
     };
 
+    handlePasswordInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validatePassword()
+        });
 
-    // handleClearForm = () => {
-    //     this.setState({
-    //         firstname: '',
-    //         lastname: '',
-    //         username: '',
-    //         password: '',
-    //         passwordconfirmed: '',
-    //         email: '',
-    //         status: '',
-    //         staffnumber: '',
-    //         title: '',
-    //         designation: '',
-    //         companyid: '',
-    //         division: '',
-    //         address: '',
-    //         phone: '',
-    //         fax: '',
-    //         mobile: '',
-    //         websiteaddress: '',
-    //         department: '',
-    //         location: '',
-    //         district: '',
-    //         region: ''
-    //     })
-    // };
-
-
-    // regex to validate urls
-    validateUrl = (value) => {
-        return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
     };
 
+    handlePasswordConfirmInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validatePasswordMatch()
+        });
 
-    validateUser = () => {
-        // initially set errorText.status to false
-        errorTexts.status = false;
-        // loop through state vars to check if specific fields meet requirements
-        // set errorText.status to true if at least one does not meet its requirement 
-        // set error message for specific field
-        for (var temp in this.state) {
-            switch (temp.name) {
-                case "password":
-                    if (temp.value.length < 8) {
-                        errorTexts.password = "password length must be more than 8";
-                        errorTexts.error = true
-                    }
-                    break;
-                case "phone":
-                    if (temp.value.length !== 10) {
-                        errorTexts.phone = "phone number must be more than 10";
-                        errorTexts.error = true
-                    }
-                    break;
-                case "fax":
-                    if (temp.value.length !== 10) {
-                        errorTexts.fax = "fax number must be more than 10";
-                        errorTexts.error = true
-                    }
-                    break;
-                case "mobile":
-                    if (temp.value.length !== 10) {
-                        errorTexts.mobile = "mobile number must be more than 10";
-                        errorTexts.error = true
-                    }
-                    break;
-                case "websiteaddress":
-                    if (!this.validateUrl(temp.value)) {
-                        errorTexts.websiteaddress = "incorrect website address\n"
-                            + "url should be in the format 'https://www.example.com'";
-                        errorTexts.error = true
-                    }
-                    break;
-                default:
-                    return temp;
-            }
+    };
+
+    handleEmailInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateEmail()
+        });
+
+    };
+
+    handleWebsiteInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateWebsiteAddress()
+        });
+
+    };
+
+    handleDigitInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        }, () => {
+            this.validateDigit(name)
+        });
+
+    };
+
+    validatePassword = () => {
+        let strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+
+        if (strongRegex.test(this.state.password)) {
+            $('#passwordInput').removeClass("is-invalid");
+            $('#passwordInput').addClass("is-valid")
+            // $("#passwordConfirmedInput").css("border", "5px solid green");
+        } else {
+            $('#passwordInput').removeClass("is-valid");
+            $('#passwordInput').addClass("is-invalid")
+        }
+
+        if (!this.state.password) {
+            $('#passwordInput').removeClass("is-valid");
+            $('#passwordInput').removeClass("is-invalid");
         }
     };
 
+    validatePasswordMatch = () => {
+
+        if (this.state.password === this.state.passwordConfirmed) {
+            $('#passwordInputMatch').removeClass("is-invalid");
+            $('#passwordInputMatch').addClass("is-valid")
+        } else {
+            $('#passwordInputMatch').removeClass("is-valid");
+            $('#passwordInputMatch').addClass("is-invalid")
+        }
+
+        if (!this.state.passwordConfirmed) {
+            $('#passwordInputMatch').removeClass("is-valid");
+            $('#passwordInputMatch').removeClass("is-invalid");
+        }
+    };
+
+    validateEmail = () => {
+        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if (!re.test(this.state.email)) {
+            $('#email').removeClass("is-valid");
+            $('#email').addClass("is-invalid")
+        } else {
+            $('#email').removeClass("is-invalid");
+            $('#email').addClass("is-valid")
+        }
+
+        if (!this.state.email) {
+            $('#email').removeClass("is-valid");
+            $('#email').removeClass("is-invalid");
+        }
+    };
+
+    validateWebsiteAddress = () => {
+        let urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/;
+        if (!urlRegex.test(this.state.websiteaddress)) {
+            $('#websiteAddress').removeClass("is-valid");
+            $('#websiteAddress').addClass("is-invalid");
+        } else {
+            $('#websiteAddress').removeClass("is-invalid");
+            $('#websiteAddress').addClass("is-valid");
+        }
+
+        if (!this.state.websiteaddress) {
+            $('#websiteAddress').removeClass("is-valid");
+            $('#websiteAddress').removeClass("is-invalid");
+        }
+    };
+
+    validateDigit = (name) => {
+        switch (name) {
+            case "phone": {
+                if (this.state.phone.length !== 10) {
+                    $('#phoneNumber').removeClass("is-valid");
+                    $('#phoneNumber').addClass("is-invalid");
+                } else {
+                    $('#phoneNumber').removeClass("is-invalid");
+                    $('#phoneNumber').addClass("is-valid");
+                }
+                if (!this.state.phone) {
+                    $('#phoneNumber').removeClass("is-valid");
+                    $('#phoneNumber').removeClass("is-invalid");
+                }
+                break
+            }
+            case "fax": {
+                if (this.state.fax.length !== 10) {
+                    $('#fax').removeClass("is-valid");
+                    $('#fax').addClass("is-invalid");
+                } else {
+                    $('#fax').removeClass("is-invalid");
+                    $('#fax').addClass("is-valid");
+                }
+                if (!this.state.fax) {
+                    $('#fax').removeClass("is-valid");
+                    $('#fax').removeClass("is-invalid");
+                }
+                break
+            }
+            case "mobile": {
+                if (this.state.mobile.length !== 10) {
+                    $('#mobile').removeClass("is-valid");
+                    $('#mobile').addClass("is-invalid");
+                } else {
+                    $('#mobile').removeClass("is-invalid");
+                    $('#mobile').addClass("is-valid");
+                }
+
+                if (!this.state.mobile) {
+                    $('#mobile').removeClass("is-valid");
+                    $('#mobile').removeClass("is-invalid");
+                }
+                break
+            }
+            default: {
+            }
+        }
+    };
 
     sendRequest = (event) => {
         event.preventDefault();
         // check if user passwords match
-        if (this.state.password.trim() === this.state.passwordconfirmed.trim()) {
-            // validate user inputs to check if accepted values has been entered
-            this.validateUser();
-            // if errorTexts.status = false,  make post request to api and submit user details
-            if (errorTexts.error === false) {
-                this.props.registerUser(this.state);
-                // this.handleClearForm()
-            }
-            else{
-                //Display errors
-                console.log(errorTexts)
-            }
+        if ($("input").hasClass("is-invalid")) {
 
+            $('#errorBlock').removeClass("alert-success");
+            $('#errorBlock').addClass("alert-danger");
+            $("#errorBlockText")
+                .html(
+                    `<strong>Error! </strong> An Incorrect Input Was Provided.`
+                );
+            $("#errorBlock").show();
+            $('html, body').animate({
+                scrollTop: $("#errorBlock").offset().top
+            }, 200);
         }
         else {
-            alert('Password Mismatch');
+            this.props.registerUser(this.state);
         }
+    };
+
+    hideErrorNotification = () => {
+        $('#errorBlock').hide()
     };
 
     componentDidMount() {
 
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
-            $('#my-arrow').toggleClass('fa-arrow-right fa-arrow-left');
-        });
+        $('#errorBlock').hide();
+
 
         $('#next_1').click(function (e) {
             // e.preventDefault();
@@ -191,6 +277,22 @@ export default class Register extends Component {
             $('html, body').animate({
                 scrollTop: $("#myTab").offset().top
             }, 200);
+        });
+
+        $('#back_1').click(function (e) {
+            // e.preventDefault();
+            $('#myTab a[href="#home"]').tab('show');
+            $('html, body').animate({
+                scrollTop: $("#myTab").offset().top
+            }, 200);
+        });
+
+        $('#back_2').click(function (e) {
+            // e.preventDefault();
+            $('#myTab a[href="#profile"]').tab('show');
+            $('html, body').animate({
+                scrollTop: $("#myTab").offset().top
+            }, 200);
         })
 
     }
@@ -199,75 +301,52 @@ export default class Register extends Component {
         return (
 
             <div className="wrapper">
-
-                {/*sidebar*/}
-                <Sidebar/>
-
-                {/*main content*/}
                 <div id="content">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">
-
-                            <button type="button" id="sidebarCollapse" className="btn">
-                                <i className="fas fa-arrow-left" id="my-arrow"></i>
-                                <span></span>
-                            </button>
-                            <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
-                                    data-toggle="collapse" data-target="#navbarSupportedContent"
-                                    aria-controls="navbarSupportedContent" aria-expanded="false"
-                                    aria-label="Toggle navigation">
-                                <i className="fas fa-align-justify"></i>
-                            </button>
-
-                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-
-                                <h3>Register</h3>
-
-                                <ul className="nav navbar-nav ml-auto">
-
-                                    <li className="nav-item">
-                                        <Link to={'/'}
-                                              className="nav-link dropdown-item "> Home </Link>
-
-                                    </li>
-                                    <li className="nav-item">
-                                        {/*<a className="nav-link" style={styles.hand} onClick={this.renderRedirect('')}>Home</a>*/}
-                                        <div className="dropdown show">
-                                            <button className="btn" role="button"
-                                                    id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                                                    aria-expanded="false"><i className="fas fa-user"></i>
-                                            </button>
-
-                                            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                <Link to={'/login'}
-                                                      className="nav-link dropdown-item "> Login </Link>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                            <div className="col-sm-12 text-center ">
+                                    <header style={{
+                                        textAlign: "center",
+                                        fontSize: "35px",
+                                        fontColor: "black",
+                                        fontFamily: "Lucida Console",
+                                        color: "#636e72"
+                                    }}>
+                                        <h1>Adwenan Land Commission System</h1>
+                                    </header>
+                                </div>
                         </div>
                     </nav>
 
                     <div className="container">
 
+                        <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
+                            <div id="errorBlockText"></div>
+                            <button type="button" className="close" onClick={this.hideErrorNotification}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
 
                         <div>
                             <div className="login_wrapper col-md-6 ml-auto mr-auto">
                                 <br/>
                                 <div className="shadow-lg p-3 mb-5 bg-white rounded">
                                     <header>
-                                        <h4 style={this.style2}>User registration Form</h4>
+                                        <h4 style={styles.style2}>User registration Form</h4>
                                     </header>
                                     <br/>
 
+                                    <div className="change_link">Already Have An Account? <Link to={'/login'}
+                                                                                                style={styles.showColor}> Login </Link>
+                                    </div>
+                                    <br/>
                                     <form onSubmit={this.sendRequest} method="post">
 
                                         <ul className="nav nav-tabs" role="tablist" id="myTab">
                                             <li className="nav-item">
                                                 <a className="nav-link active" id="home-tab" data-toggle="tab"
                                                    href="#home"
-                                                   role="tab" aria-controls="home" aria-selected="true">Home</a>
+                                                   role="tab" aria-controls="home" aria-selected="true">Personal</a>
                                             </li>
                                             <li className="nav-item">
                                                 <a className="nav-link" id="profile-tab" data-toggle="tab"
@@ -277,7 +356,7 @@ export default class Register extends Component {
                                             <li className="nav-item">
                                                 <a className="nav-link" id="contact-tab" data-toggle="tab"
                                                    href="#contact"
-                                                   role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+                                                   role="tab" aria-controls="contact" aria-selected="false">Address</a>
                                             </li>
                                         </ul>
 
@@ -307,53 +386,83 @@ export default class Register extends Component {
                                                     <input type="text" className="form-control" placeholder="Username"
                                                            name="username" value={this.state.username}
                                                            onChange={this.handleInputChange} required/>
-                                                    <div>
-                                                        <br/>
-                                                        {/*<a className="btn btn-outline-success pull-right" id="profile-tab" data-toggle="tab" href="#profile"*/}
-                                                        {/*   role="tab" aria-controls="profile" aria-selected="false">Next</a>*/}
-                                                        <a id='next_1'
-                                                           className="btn btn-outline-success pull-right">Next</a>
-                                                    </div>
                                                 </div>
 
                                                 <br/>
-                                            </div>
 
-                                            <div className="tab-pane fade" id="profile" role="tabpanel"
-                                                 aria-labelledby="profile-tab">
                                                 <div>
                                                     <label>Password</label>
-                                                    <input type="password" className="form-control"
+                                                    <input type="password" id="passwordInput" className="form-control"
                                                            placeholder="Password "
                                                            name="password" value={this.state.password}
-                                                           onChange={this.handleInputChange} required/>
+                                                           onChange={this.handlePasswordInputChange}
+                                                           required/>
+                                                    <div className="invalid-feedback">
+                                                        Password must be 8 characters long and
+                                                        <br/>
+                                                        must contain at least 1 lowercase,
+                                                        <br/>
+                                                        1 uppercase 1 numeric 1 symbol character
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Valid password entered.
+                                                    </div>
                                                 </div>
 
                                                 <br/>
 
                                                 <div>
                                                     <label>Confirm Password</label>
-                                                    <input type="password" className="form-control"
+                                                    <input type="password" id="passwordInputMatch"
+                                                           className="form-control"
                                                            placeholder="Confirm Password "
-                                                           name="passwordconfirmed" value={this.state.passwordconfirmed}
-                                                           onChange={this.handleInputChange} required/>
+                                                           name="passwordConfirmed" value={this.state.passwordConfirmed}
+                                                           onChange={this.handlePasswordConfirmInputChange}
+                                                           required/>
+                                                    <div className="invalid-feedback">
+                                                        Passwords do not match !.
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Passwords match.
+                                                    </div>
                                                 </div>
 
                                                 <br/>
 
                                                 <div>
                                                     <label>Email</label>
-                                                    <input type="text" className="form-control" placeholder="Email"
+                                                    <input type="text" id="email" className="form-control"
+                                                           placeholder="Email"
                                                            name="email"
-                                                           value={this.state.email} onChange={this.handleInputChange}
+                                                           value={this.state.email}
+                                                           onChange={this.handleEmailInputChange}
                                                            required/>
+                                                    <div className="invalid-feedback">
+                                                        Please enter a valid email.
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Valid email entered.
+                                                    </div>
+
+                                                    <div>
+                                                        <br/>
+                                                        <button id='next_1'
+                                                                className="btn btn-outline-success pull-right">Next
+                                                        </button>
+                                                    </div>
                                                 </div>
 
+
+
                                                 <br/>
+                                            </div>
+
+                                            <div className="tab-pane fade" id="profile" role="tabpanel"
+                                                 aria-labelledby="profile-tab">
 
                                                 <div>
                                                     <label>Staff Number</label>
-                                                    <input type="text" className="form-control"
+                                                    <input type="number" className="form-control"
                                                            placeholder="Staff number"
                                                            name="staffnumber" value={this.state.staffnumber}
                                                            onChange={this.handleInputChange} required/>
@@ -370,27 +479,18 @@ export default class Register extends Component {
                                                 </div>
 
                                                 <br/>
-
-                                                <div>
-                                                    <label>Designation</label>
-                                                    <input type="text" className="form-control"
-                                                           placeholder="Designation"
-                                                           name="designation" value={this.state.designation}
-                                                           onChange={this.handleInputChange} required/>
-                                                    <div>
-                                                        <br/>
-                                                        <a id='next_2'
-                                                           className="btn btn-outline-success pull-right">Next</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="tab-pane fade" id="contact" role="tabpanel"
-                                                 aria-labelledby="contact-tab">
                                                 <div>
                                                     <label>Company ID</label>
-                                                    <input type="text" className="form-control" placeholder="Company ID"
+                                                    <input type="number" className="form-control"
+                                                           placeholder="Company ID"
                                                            name="companyid" value={this.state.companyid}
+                                                           onChange={this.handleInputChange} required/>
+                                                </div>
+                                                <br/>
+                                                <div>
+                                                    <label>Department</label>
+                                                    <input type="text" className="form-control" placeholder="Department"
+                                                           name="department" value={this.state.department}
                                                            onChange={this.handleInputChange} required/>
                                                 </div>
 
@@ -402,6 +502,38 @@ export default class Register extends Component {
                                                            onChange={this.handleInputChange} required/>
                                                 </div>
 
+
+                                                <br/>
+                                                <div>
+                                                    <label>Location</label>
+                                                    <input type="text" className="form-control" placeholder="Location"
+                                                           name="location" value={this.state.location}
+                                                           onChange={this.handleInputChange} required/>
+                                                </div>
+
+                                                <br/>
+
+                                                <div>
+                                                    <label>Designation</label>
+                                                    <input type="text" className="form-control"
+                                                           placeholder="Designation"
+                                                           name="designation" value={this.state.designation}
+                                                           onChange={this.handleInputChange} required/>
+                                                    <div>
+                                                        <br/>
+                                                        <button id='back_1'
+                                                                className="btn btn-outline-success pull-right"
+                                                                style={{marginRight: '10px'}}>Previous
+                                                        </button>
+                                                        <button id='next_2'
+                                                                className="btn btn-outline-success pull-right">Next
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="tab-pane fade" id="contact" role="tabpanel"
+                                                 aria-labelledby="contact-tab">
                                                 <br/>
                                                 <div>
                                                     <label>Address</label>
@@ -414,53 +546,72 @@ export default class Register extends Component {
                                                 <br/>
                                                 <div>
                                                     <label>Phone</label>
-                                                    <input type="text" className="form-control" placeholder="Phone"
+                                                    <input type="number" size="10" id="phoneNumber"
+                                                           className="form-control"
+                                                           placeholder="Phone"
                                                            name="phone"
-                                                           value={this.state.phone} onChange={this.handleInputChange}
+                                                           value={this.state.phone}
+                                                           onChange={this.handleDigitInputChange}
                                                            required/>
+                                                    <div className="invalid-feedback">
+                                                        Phone number must be 10 digits
+                                                        <br/>
+                                                        e.g. 0506392618
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Valid phone number entered.
+                                                    </div>
                                                 </div>
-
                                                 <br/>
                                                 <div>
                                                     <label>Fax</label>
-                                                    <input type="text" className="form-control" placeholder="Fax"
+                                                    <input type="number" size="10" id="fax" className="form-control"
+                                                           placeholder="Fax"
                                                            name="fax"
-                                                           value={this.state.fax} onChange={this.handleInputChange}
+                                                           value={this.state.fax}
+                                                           onChange={this.handleDigitInputChange}
                                                            required/>
+                                                    <div className="invalid-feedback">
+                                                        Fax number must be 10 digits
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Valid fax number entered entered.
+                                                    </div>
                                                 </div>
 
                                                 <br/>
                                                 <div>
                                                     <label>Mobile</label>
-                                                    <input type="text" className="form-control" placeholder="Mobile"
+                                                    <input type="number" size="10" id="mobile" className="form-control"
+                                                           placeholder="mobile"
                                                            name="mobile"
-                                                           value={this.state.mobile} onChange={this.handleInputChange}
+                                                           value={this.state.mobile}
+                                                           onChange={this.handleDigitInputChange}
                                                            required/>
+                                                    <div className="invalid-feedback">
+                                                        Mobile number must be 10 digits
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Valid mobile number entered.
+                                                    </div>
                                                 </div>
 
                                                 <br/>
                                                 <div>
                                                     <label>Website Address</label>
-                                                    <input type="text" className="form-control"
+                                                    <input type="text" id="websiteAddress" className="form-control"
                                                            placeholder="Website Address"
                                                            name="websiteaddress" value={this.state.websiteaddress}
-                                                           onChange={this.handleInputChange} required/>
-                                                </div>
-
-                                                <br/>
-                                                <div>
-                                                    <label>Department</label>
-                                                    <input type="text" className="form-control" placeholder="Department"
-                                                           name="department" value={this.state.department}
-                                                           onChange={this.handleInputChange} required/>
-                                                </div>
-
-                                                <br/>
-                                                <div>
-                                                    <label>Location</label>
-                                                    <input type="text" className="form-control" placeholder="Location"
-                                                           name="location" value={this.state.location}
-                                                           onChange={this.handleInputChange} required/>
+                                                           onChange={this.handleWebsiteInputChange}
+                                                           required/>
+                                                    <div className="invalid-feedback">
+                                                        Please enter a valid website Address
+                                                        <br/>
+                                                        e.g. https://www.example.com
+                                                    </div>
+                                                    <div className="valid-feedback">
+                                                        Valid website address entered.
+                                                    </div>
                                                 </div>
 
                                                 <br/>
@@ -483,8 +634,12 @@ export default class Register extends Component {
                                                 <div>
                                                     <br/>
                                                     <div>
+                                                        <button id='back_2'
+                                                                className="btn btn-outline-success pull-right"
+                                                                style={{marginRight: '10px'}}>Previous
+                                                        </button>
                                                         <button className="btn btn-outline-success" type="submit"
-                                                                value="Submit">Register
+                                                                value="Submit">Submit
                                                         </button>
                                                     </div>
                                                 </div>

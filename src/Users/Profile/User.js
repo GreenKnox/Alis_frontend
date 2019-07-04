@@ -1,10 +1,10 @@
   import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom'
-import queryString from "query-string";
-import * as env from "../config";
+import queryString from "query-string/index";
+import * as env from "../../config";
 import axios from 'axios/index';
-import '../css/user.css';
-import Sidebar from "../components/Sidebar";
+import '../../css/user.css';
+import Sidebar from "../../components/Sidebar";
 
 
 var tempDetails = {};
@@ -99,8 +99,7 @@ export default class User extends Component {
                         <div className="container-fluid">
 
                             <button type="button" id="sidebarCollapse" className="btn">
-                                <i className="fas fa-arrow-left" id="my-arrow"></i>
-                                <span></span>
+                                <i className="fas fa-align-left"></i>
                             </button>
                             <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button"
                                     data-toggle="collapse" data-target="#navbarSupportedContent"

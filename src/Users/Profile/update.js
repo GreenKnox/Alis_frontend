@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import '../css/App.css';
+import '../../css/App.css';
 import Sidebar from "../components/Sidebar";
 import {Link} from "react-router-dom";
 import $ from "jquery";
 
 var AppState = "";
 
-export default class Home extends Component {
+export default class update extends Component {
 
     constructor(props) {
         super(props);
@@ -89,12 +89,12 @@ export default class Home extends Component {
 
                             <div className="collapse navbar-collapse" id="navbarSupportedContent">
 
-                                <h3>Home</h3>
+                                <h3>Edit Profile</h3>
 
                                 <ul className="nav navbar-nav ml-auto">
 
                                     <li className="nav-item">
-                                        <Link to={'/'} className="nav-link dropdown-item "> Home </Link>
+                                        <Link to={'/'} className="nav-link dropdown-item "> Save </Link>
 
                                     </li>
                                     <li className="nav-item">
@@ -108,7 +108,7 @@ export default class Home extends Component {
                                             <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                                 <a className="dropdown-item" href="#"
                                                    onClick={this.props.logoutUser}>Logout</a>
-                                                <a className="dropdown-item" href="#">Profile</a>
+                                                <a className="dropdown-item" href="#">save</a>
                                             </div>
                                         </div>
                                     </li>

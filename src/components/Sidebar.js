@@ -6,9 +6,6 @@ import '../css/admin.css';
 export default class Sidebar extends Component {
 
 
-    // componentDidMount() {
-    //
-    // }
 
     renderRedirect = (path) => {
         return <Redirect to={`/${path}`}/>
@@ -92,14 +89,13 @@ export default class Sidebar extends Component {
                     </li>
                 </ul>
 
-
                 {/*<ul className="list-unstyled CTAs">*/}
                 {/*    <li>*/}
                 {/*        <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" className="download">Lorem*/}
                 {/*            Ipsum</a>*/}
                 {/*    </li>*/}
                 {/*    <li>*/}
-                {/*        <a href="https://bootstrapious.com/p/bootstrap-sidebar" className="article">Lorem Ipsum</a>*/}
+                {/*         <a href="https://bootstrapious.com/p/bootstrap-sidebar" className="article">Lorem Ipsum</a>*/}
                 {/*    </li>*/}
                 {/*</ul>*/}
             </nav>
