@@ -105,12 +105,11 @@ export default class update extends Component {
                                                     aria-expanded="false"><i className="fas fa-user"></i>
                                             </button>
 
-                                            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                <a className="dropdown-item" href="#"
-                                                   onClick={this.props.logoutUser}>Logout</a>
-                                                <a className="dropdown-item" href="#">save</a>
-                                            </div>
-                                        </div>
+                                            <button className="">
+
+                                            </button>
+
+
                                     </li>
                                 </ul>
                             </div>
