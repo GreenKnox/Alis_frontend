@@ -117,22 +117,22 @@ export default class update extends Component {
                     </nav>
 
                     <div className="container">
-
                         <div className="alert alert-danger alert-dismissible fade show" role="alert" id="errorBlock">
                             <div id="errorBlockText"></div>
                             <button type="button" className="close" onClick={this.hideErrorNotification}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-
-
                     </div>
+
                 </div>
-
             </div>
-
         )
+
     }
+
+
 }
+
 
 
