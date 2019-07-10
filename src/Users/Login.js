@@ -77,9 +77,10 @@ export default class Login extends Component {
             <div className="wrapper">
 
                 {/*sidebar*/}
-                <Sidebar/>
+                {/*<Sidebar/>*/}
 
                 {/*main content*/}
+
                 <div id="content">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">

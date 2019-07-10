@@ -67,7 +67,7 @@ export default class Sidebar extends Component {
                         </ul>
                     </li>
                     <li className="sidebar-list">
-                        <a href="#">
+                        <a href="/test">
                             <i className="fas fa-image"></i>
                             <span>User Management</span>
                             <strong></strong>

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import '../../css/App.css';
-import 'react-notifications-component'
+// import Sidebar from ""
+import 'react-notifications-component';
 import {Link} from "react-router-dom";
 import $ from "jquery";
 
@@ -76,13 +77,18 @@ export default class Update extends Component {
     render() {
         return (
 
-            <div className="container">
+
+            <div className="wrapper">
+
+
                 <div id="content">
                     <nav className="navbar navbar-expand-lg navbar-light bg-light">
                         <div className="container-fluid">
-                            <div className="col-sm-12 text-left ">
-                                Your Profile
-                            </div>
+
+                            <button type="button" id="sidebarCollapse" className="btn">
+                                <i className="fas fa-arrow-left" id="my-arrow"></i>
+                            </button>
+                            <button className="btn btn-success"><a href="/">Edit profile</a></button>
                         </div>
                     </nav>
 
