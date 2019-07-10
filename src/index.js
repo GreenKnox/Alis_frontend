@@ -7,6 +7,7 @@ import $ from "jquery";
 import './css/index.css';
 // Auth-free components
 import Login from './Users/Login'
+import Update from './Users/Profile/update'
 import Register from './Users/Register'
 import Activated from './Users/Activated'
 import ForgotPassword from './Users/forgotpassword/ForgotPassword';
@@ -774,6 +775,11 @@ class App extends React.Component {
                            !this.state.isLoggedIn ?
                                (<Login {...props} loginUser={this._loginUser}/>) :
                                (<Redirect to={{pathname: "/"}}/>)}
+                />
+
+
+                <Route exact path="/test"
+                       render={props => (<Update {...props}/>)}
                 />
 
                 <Route exact path="/register"
